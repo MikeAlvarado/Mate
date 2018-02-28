@@ -18,6 +18,8 @@ macro
   							elsif text == "mientras"	then return [:while, {0 => text}]
   							elsif text == "verdadero" 	then return [:true, {0 => "bool", 1 => true}]
                             elsif text == "falso" 		then return [:false, {0 => "bool", 1 => false}]
+                            elsif text == "cst_integer" then return [:NUMBER, {0 => text}]
+                           	elsif text == "cst_decimal" then return [:DECIMAL, {0 => text}]
                             elsif text == "bool" 		then return [:cst_boolean, {0 => text}]
                             else 							 return [:ID, {0 => text}] end }
 
@@ -31,7 +33,6 @@ macro
   \>=                 	{ [:op_greater_equal, {0 => text}] }
   &&                  	{ [:op_and, {0 => text}] }
   \|\|                	{ [:op_or, {0 => text}] }
-  !                   	{ [:NOT, {0 => text}] }
   %                   	{ [:MOD, {0 => text}] }
   \*                  	{ [:op_multiply, {0 => text}]}
   \/                  	{ [:op_divide, {0 => text}]}
