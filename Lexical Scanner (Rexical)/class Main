@@ -18,13 +18,13 @@ macro
   							elsif text == "mientras"	then return [:while, {0 => text}]
   							elsif text == "verdadero" 	then return [:true, {0 => "bool", 1 => true}]
                             elsif text == "falso" 		then return [:false, {0 => "bool", 1 => false}]
-                            elsif text == "cst_integer" then return [:NUMBER, {0 => text}]
-                           	elsif text == "cst_decimal" then return [:DECIMAL, {0 => text}]
+                            elsif text == "numero" 		then return [:cst_integer, {0 => text}]
+                           	elsif text == "decimal" 	then return [:cst_decimal, {0 => text}]
                             elsif text == "bool" 		then return [:cst_boolean, {0 => text}]
                             else 							 return [:ID, {0 => text}] end }
 
   \d+\.\d+           	{ [:CTED, {0 => "cst_decimal", 1 => text.to_f}] }		//([0-9]*[.])?[0-9][0-9]*
-  \d+                 	{ [:CTEN, {0 => "cst_integer", 1 => text.to_i}] } 	//[0-9][0-9]*
+  \d+                 	{ [:CTEN, {0 => "cst_integer", 1 => text.to_i}] } 		//[0-9][0-9]*
   ".*"                	{ [:CTESTRING, {0 => "cst_string", 1 => text[1...-1]}] }
   !                   	{ [:op_not, {0 => text}] }
   ==                  	{ [:op_equal, {0 => text}] }
@@ -33,22 +33,22 @@ macro
   \>=                 	{ [:op_greater_equal, {0 => text}] }
   &&                  	{ [:op_and, {0 => text}] }
   \|\|                	{ [:op_or, {0 => text}] }
-  %                   	{ [:MOD, {0 => text}] }
+  %                   	{ [:op_mod, {0 => text}] }
   \*                  	{ [:op_multiply, {0 => text}]}
   \/                  	{ [:op_divide, {0 => text}]}
   \+                  	{ [:op_add, {0 => text}]}
   \-                  	{ [:op_subtract, {0 => text}] }
   \(                  	{ [:left_parenthesis, {0 => text}] }
   \)                  	{ [:right_parenthesis, {0 => text}] }
-  \{                  	{ [:BLEFT, {0 => text}] }
-  \}                  	{ [:BRIGHT, {0 => text}] }
+  \{                  	{ [:right_curlybrace, {0 => text}] }
+  \}                  	{ [:left_curlybrace, {0 => text}] }
   \[                  	{ [:right_bracket, {0 => text}] }
   \]                  	{ [:left_bracket, {0 => text}] }
   :                   	{ [:colon, {0 => text}] }
   ;                   	{ [:semicolon, {0 => text}] }
   =                   	{ [:op_assignation, {0 => text}] }
   ,                   	{ [:comma, {0 => text}] }
-  \.                  	{ [:POINT, {0 => text}] }
+  \.                  	{ [:punto, {0 => text}] }				
   \<                  	{ [:op_less, {0 => text}] }
   \>                  	{ [:op_greater, {0 => text}] }
   
