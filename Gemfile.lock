@@ -1,0 +1,15 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    racc (1.4.14)
+    rexical (1.0.5)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  racc
+  rexical
+
+BUNDLED WITH
+   1.16.1

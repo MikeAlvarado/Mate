@@ -1,0 +1,21 @@
+require 'rspec/core/rake_task'
+
+RSpec::Core::RakeTask.new do |c|
+  options = ['--color']
+  options += ["--format", "documentation"]
+  c.rspec_opts = options
+end
+ 
+desc "Generate Lexer"
+task :lexer do
+  `rex lex.rex -o lexerino.rb`
+end
+
+desc "Generate Parser"
+task :parser do
+  `racc parser.y -o parserino.rb`
+end
+
+
+desc "Generate Lexer and Parser"
+task :generate => [:lexer, :parser]
