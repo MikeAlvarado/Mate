@@ -5,17 +5,28 @@ RSpec::Core::RakeTask.new do |c|
   options += ["--format", "documentation"]
   c.rspec_opts = options
 end
- 
+
 desc "Generate Lexer"
 task :lexer do
-  `rex lex.rex -o lexerino.rb`
+  `rex src/lex.rex -o build/lexerino.rb`
 end
 
 desc "Generate Parser"
 task :parser do
-  `racc parser.y -o parserino.rb`
+  `racc -v src/parser.y -o build/parserino.rb`
 end
-
 
 desc "Generate Lexer and Parser"
 task :generate => [:lexer, :parser]
+
+desc "Cleeeean"
+task :clean do
+  `rm -rf build && mkdir build`
+end
+
+desc "Running test"
+task :test do
+  require './build/parserino'
+  sourceCode = Mate.new
+  sourceCode.parse('test/app.mate')
+end

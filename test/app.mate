@@ -1,0 +1,49 @@
+programa prueba {
+    funcion suma(x,y) {
+        var resultados = 1, c, d, e;
+        resultado[0] = suma(1, b);
+        resultado[1] = suma(suma(1, b), b);
+        b = resultado[1];
+        resultado[2] = "patito";
+        suma([1, 2, 3, 4]);
+        c = 0;
+        d = cierto;
+        e = falso;
+        b = e;
+
+        regresa resultado;
+    }
+
+    funcion resta() {
+        regresa suma();
+    }
+
+    funcion arreglo() {
+        regresa [];
+    }
+
+    funcion llamada() {
+        si(a > b == falso) {
+            si(!cierto) {
+                si(falso) {
+
+                }
+            }
+        }
+        pero si no {
+
+        }
+        regresa arreglo();
+    }
+
+    funcion origen() {
+        regresa 10;
+        var b = 0;
+        mientras(a > 1 && ((a * b) > "hola")) {
+            var x = 5 + 7 * 8 + (9 / 10 - 2);
+            arreglo(5 * suma(1));
+            cat[5*10] = [0, 0, 0] + [1, 1, 1];
+        }
+        var palabra = "pala" + "bra" + cat;
+    }
+}
