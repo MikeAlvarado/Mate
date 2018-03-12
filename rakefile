@@ -8,25 +8,28 @@ end
 
 desc "Generate Lexer"
 task :lexer do
-  `rex src/lex.rex -o build/lexerino.rb`
+  `rex src/analyzers/lex.rex -o build/analyzers/lexerino.rb`
 end
 
 desc "Generate Parser"
 task :parser do
-  `racc -v src/parser.y -o build/parserino.rb`
+  `racc -v src/analyzers/parser.y.rb -o build/analyzers/parserino.rb`
 end
 
 desc "Generate Lexer and Parser"
-task :generate => [:lexer, :parser]
+task :generate => [:build_setup, :lexer, :parser]
+
+desc "Build setup"
+task :build_setup do
+  `mkdir -p build/analyzers && rsync -a --exclude='analyzers/' src/* build`
+end
 
 desc "Cleeeean"
 task :clean do
-  `rm -rf build && mkdir build`
+  `rm -rf build`
 end
 
 desc "Running test"
-task :test do
-  require './build/parserino'
-  sourceCode = Mate.new
-  sourceCode.parse('test/app.mate')
+task :test => :generate do
+  exec "ruby", "-I", "./build", "test/test.rb"
 end

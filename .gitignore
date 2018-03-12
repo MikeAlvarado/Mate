@@ -1,2 +1,6 @@
 build
 .DS_STORE
+.byebug_history
+.bundle
+.vscode
+bin

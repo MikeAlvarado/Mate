@@ -1,6 +1,7 @@
 programa prueba {
     funcion suma(x,y) {
-        var resultados = 1, c, d, e;
+        var resultados = 1, c = [1,2,3,4];
+        var d, e;
         resultado[0] = suma(1, b);
         resultado[1] = suma(suma(1, b), b);
         b = resultado[1];
@@ -10,6 +11,8 @@ programa prueba {
         d = cierto;
         e = falso;
         b = e;
+
+        pajarito = 1;
 
         regresa resultado;
     }
@@ -24,14 +27,17 @@ programa prueba {
 
     funcion llamada() {
         si(a > b == falso) {
+            var x = 0;
             si(!cierto) {
+                x = 1;
                 si(falso) {
-
+                    var b = 0;
+                    var y = 1;
                 }
             }
         }
         pero si no {
-
+            var y = 2;
         }
         regresa arreglo();
     }
