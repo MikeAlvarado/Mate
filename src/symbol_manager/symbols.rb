@@ -29,21 +29,31 @@ class Symbols
     @var_waitlist << var
   end
 
+  def validate_var_defined(name)
+    unless @current_scope.var?(name)
+      raise MateError.undefined_var(name, @current_function_name)
+    end
+  end
+
+  def validate_function_defined(name)
+    unless @function.include?(name)
+      raise MateError.undefined_function(name)
+    end
+  end
+
   def def_var(name, value = nil)
     if @function.include?(name)
-      raise MateError.new "Error de semántica: identificador duplicado '#{name}'."
+      raise MateError.duplicate_id(name)
     end
     if @current_scope.var?(name)
-      raise MateError.new "Error de semántica: la variable '#{name}' "\
-      "ya está definida en la función '#{@current_function_name}'."
+      raise MateError.duplicate_var(name, @current_function_name)
     end
     @current_scope.vars[name] = value
   end
 
   def def_function(name)
     if @function.include?(name)
-      raise MateError.new "Error de semántica: la función '#{name}' "\
-      "ya está definida."
+      raise MateError.duplicate_function(name)
     end
     @function.add(name)
     @current_function_name = name
