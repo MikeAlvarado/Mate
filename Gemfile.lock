@@ -1,0 +1,17 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    byebug (10.0.0)
+    racc (1.4.14)
+    rexical (1.0.5)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  byebug
+  racc
+  rexical
+
+BUNDLED WITH
+   1.16.1
