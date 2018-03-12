@@ -1,0 +1,35 @@
+require 'rspec/core/rake_task'
+
+RSpec::Core::RakeTask.new do |c|
+  options = ['--color']
+  options += ["--format", "documentation"]
+  c.rspec_opts = options
+end
+
+desc "Generate Lexer"
+task :lexer do
+  `rex src/analyzers/lex.rex -o build/analyzers/lexerino.rb`
+end
+
+desc "Generate Parser"
+task :parser do
+  `racc -v src/analyzers/parser.y.rb -o build/analyzers/parserino.rb`
+end
+
+desc "Generate Lexer and Parser"
+task :generate => [:build_setup, :lexer, :parser]
+
+desc "Build setup"
+task :build_setup do
+  `mkdir -p build/analyzers && rsync -a --exclude='analyzers/' src/* build`
+end
+
+desc "Cleeeean"
+task :clean do
+  `rm -rf build`
+end
+
+desc "Running test"
+task :test => :generate do
+  exec "ruby", "-I", "./build", "test/test.rb"
+end
