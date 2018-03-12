@@ -75,13 +75,12 @@ rule
     | FALSE                                           { result = false}
 
   var_value:
-    ID array_access                                   {}
+    ID array_access
+    { validate_var_defined(val[0]) }
 
   array:
     L_SQ_BRACKET values R_SQ_BRACKET
-    {
-      result = val[1].to_a.flatten.compact 
-    }
+    { result = val[1].to_a.flatten.compact }
 
   values:
     /* empty */                                       {}
@@ -96,7 +95,8 @@ rule
     | L_SQ_BRACKET expression R_SQ_BRACKET            {}
 
   function_call:
-    ID L_PAREN values R_PAREN                         {}
+    ID L_PAREN values R_PAREN
+    { validate_function_defined(val[0]) }
 
   return:
     RETURN expression                                 {}
@@ -202,11 +202,19 @@ end
   end
 
   def def_function(name)
-    execute_safely(-> () { $symbols.def_function(name) })
+    execute_safely -> () { $symbols.def_function(name) }
   end
 
   def def_var(name, value = nil)
-    execute_safely(-> () { $symbols.def_var(name, value) })
+    execute_safely -> () { $symbols.def_var(name, value) }
+  end
+
+  def validate_var_defined(name)
+    execute_safely -> () { $symbols.validate_var_defined(name) }
+  end
+
+  def validate_function_defined(name)
+    execute_safely -> () { $symbols.validate_function_defined(name) }
   end
 
   def on_error(t, val, vstack)
