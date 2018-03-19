@@ -4,6 +4,10 @@ class MateError < RuntimeError
     @msg = msg
   end
 
+  def self.invalid_operation(left, right, operator) {
+    MateError.new "Operación inválida: #{left} #{operator} #{right}"
+  }
+
   def self.undefined_function(name)
     MateError.new "Error de semántica: la función '#{name}' "\
     "no está definida en el programa."
@@ -11,7 +15,7 @@ class MateError < RuntimeError
 
   def self.undefined_var(name, function)
     MateError.new "Error de semántica: la variable '#{name}' "\
-    "no está definida en el context actual en la función '#{function}'."
+    "no está definida en el contexto actual en la función '#{function}'."
   end
 
   def self.duplicate_id(name)

@@ -20,11 +20,13 @@ class Scope
   end
 
   def self.pretty_print(scope)
-    pretty_print(scope.parent) unless scope.parent.nil?
-    print '  ' unless scope.vars.empty?
-    scope.vars.each do |key, value|
-      print "#{key}: #{value.nil? ? 'nil' : value}" + "; "
+    pretty_print scope.parent unless scope.parent.nil?
+    scope.vars.each do |key, var|
+      if scope.var? var
+        var = scope.var var
+      end
+      puts "  #{key}:\t"\
+        "#{var.type.undefined? ? 'nil' : var.to_s}; "
     end
-    puts '' unless scope.vars.empty?
   end
 end

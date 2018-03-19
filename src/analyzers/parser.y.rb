@@ -14,8 +14,8 @@ rule
     FUNCTION function_id L_PAREN params R_PAREN block {}
 
   function_id:
-    ID                                                { def_function(val[0]) }
-    | ORIGIN                                          { def_function(val[0]) }
+    ID                                                { def_function val[0] }
+    | ORIGIN                                          { def_function val[0] }
 
   params:
     /* empty */                                       {}
@@ -28,9 +28,9 @@ rule
     { $symbols.waitlist_var(val[1]) }
 
   block:
-    L_BRACKET                                         { $symbols.def_scope() }
-    statements
-    R_BRACKET                                         { $symbols.del_scope() }
+    L_BRACKET                                         { $symbols.def_scope }
+    statements                                        {}
+    R_BRACKET                                         { $symbols.del_scope }
 
   statements:
     /* empty */                                       {}
@@ -48,39 +48,42 @@ rule
     | return                                          {}
 
   var_declaration:
-    VAR ID more_declarations                          { def_var(val[1], val[2]) }
+    VAR ID more_declarations                          { def_var val[1], val[2] }
 
   more_declarations:
-    _more_declarations                                { result = nil }
+    _more_declarations                                { result = MateValue.undefined }
     | op_assign _more_declarations                    { result = val[0] }
 
   _more_declarations:
     /* empty */                                       {}
-    | COMMA ID more_declarations                      { def_var(val[1], val[2]) }
+    | COMMA ID more_declarations                      { def_var val[1], val[2] }
 
   var_assign:
-    var_value op_assign                               {}
+    var_value op_assign                               { assign_var val[0], val[1] }
 
   op_assign:
     OP_ASSIGN expression                              { result = val[1] }
 
   constant:
-    CST_STR                                           { result = val[0] }
-    | CST_INT                                         { result = val[0].to_i }
-    | CST_DEC                                         { result = val[0].to_f }
-    | cst_bool                                        { result = val[0] }
+    CST_STR
+    { result = MateValue.string val[0] }
+    | CST_INT
+    { result = MateValue.int val[0].to_i }
+    | CST_DEC
+    { result = MateValue.float val[0].to_f }
+    | cst_bool
+    { result = MateValue.bool val[0] }
 
   cst_bool:
     TRUE                                              { result = true }
     | FALSE                                           { result = false}
 
   var_value:
-    ID array_access
-    { validate_var_defined(val[0]) }
+    ID array_access                                   { result = val[0] }
 
   array:
     L_SQ_BRACKET values R_SQ_BRACKET
-    { result = val[1].to_a.flatten.compact }
+    { result = MateValue.array val[1].to_a.flatten.compact }
 
   values:
     /* empty */                                       {}
@@ -96,7 +99,7 @@ rule
 
   function_call:
     ID L_PAREN values R_PAREN
-    { validate_function_defined(val[0]) }
+    { validate_function_defined val[0] }
 
   return:
     RETURN expression                                 {}
@@ -122,7 +125,7 @@ rule
     | and_or expression                               {}
 
   not:
-    /* empty */                                       { result = false}
+    /* empty */                                       { result = false }
     | OP_NOT                                          { result = true }
 
   exp:
@@ -145,31 +148,72 @@ rule
     | OP_OR                                           {}
 
   item:
-    term _item                                        { result = val[0] }
+    term _item
+      { 
+        result = val[0]
+        #if operators.pop == + || -
+        #right_op = operands.pop, right_type = types.pop
+        #left_op = operands.pop, left_type = types.pop
+        #operator = operators.pop
+        #result_type = semantic_cube[left_type][right_type][operator]
+        #if result_type.nil -> throw exception
+        #result = next available addr
+        #generate quad_input(operator, left_operand, right_operand, result)
+        #quadruple.push(quad_input)
+        #operands.push(result)
+        #types.push(result_type)
+        #if operands were of temporal space, release addr (make available)
+      }
 
   _item:
     /* empty */                                       {}
-    | add_subtract item                               {}
+    | add_subtract item
+      {
+        $symbols.operators.push(val[0])
+      }
 
   add_subtract:
-    OP_ADD                                            {}
-    | OP_SUBTRACT                                     {}
+    OP_ADD
+      {
+        result = val[0]
+      }
+    | OP_SUBTRACT
+      {
+        result = val[0]
+      }
 
   term:
-    factor _term                                      { result = val[0] }
+    factor _term
+      {
+        result = val[0]
+        $symbols.evaluate
+      }
 
   _term:
     /* empty */                                       {}
-    | multiply_divide term                            {}
+    | multiply_divide term
+      {
+        $symbols.operators.push(val[0])
+      }
 
   multiply_divide:
-    OP_MULTIPLY                                       {}
-    | OP_DIVIDE                                       {}
+    OP_MULTIPLY
+      {
+        result = val[0]
+      }
+    | OP_DIVIDE
+      {
+        result = val[0]
+      }
 
   factor:
     L_PAREN expression R_PAREN                        {}
     | add_subtract constant                           {}
-    | value                                           { result = val[0] }
+    | value
+      { 
+        result = val[0]
+        $symbols.operands.push(val[0])
+      }
 
   value:
     constant                                          { result = val[0] }
@@ -182,6 +226,7 @@ end
 ---- header
 
   require_relative 'lexerino'
+  require 'symbol_manager/mate_value'
   require 'symbol_manager/symbols'
   require 'errors/mate_error'
   $line_number = 0
@@ -202,19 +247,19 @@ end
   end
 
   def def_function(name)
-    execute_safely -> () { $symbols.def_function(name) }
+    execute_safely -> () { $symbols.def_function name }
   end
 
-  def def_var(name, value = nil)
-    execute_safely -> () { $symbols.def_var(name, value) }
+  def def_var(name, value = MateValue.undefined)
+    execute_safely -> () { $symbols.def_var name, value }
   end
 
-  def validate_var_defined(name)
-    execute_safely -> () { $symbols.validate_var_defined(name) }
+  def assign_var(name, value = MateValue.undefined)
+    execute_safely -> () { $symbols.assign_var name, value }
   end
 
   def validate_function_defined(name)
-    execute_safely -> () { $symbols.validate_function_defined(name) }
+    execute_safely -> () { $symbols.validate_function_defined name }
   end
 
   def on_error(t, val, vstack)

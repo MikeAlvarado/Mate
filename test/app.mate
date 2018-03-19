@@ -10,7 +10,6 @@ programa prueba {
         c = 0;
         d = cierto;
         e = falso;
-        b = e;
 
         regresa resultado;
     }
