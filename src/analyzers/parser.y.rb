@@ -166,16 +166,12 @@ rule
       }
 
   term:
-    factor
-      {
-        
-        result = val[0]
-      }
-      _term                                           {}
+    factor _term                                      {}
 
   _term:
     /* empty */                                       {}
-    | multiply_divide term                            {}
+    | multiply_divide term
+    { binary_operation }
 
   multiply_divide:
     OP_MULTIPLY
