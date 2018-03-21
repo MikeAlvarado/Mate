@@ -3,31 +3,31 @@ class MateValue
   attr_accessor :value, :type
   def initialize(value, type)
     @value = value
-    @type = type
+    @type = Types::Instance.new(type)
   end
 
   def self.string(value)
-    MateValue.new value, Types::Instance.new(0)
+    MateValue.new value, 0
   end
 
   def self.int(value)
-    MateValue.new value, Types::Instance.new(1)
+    MateValue.new value, 1
   end
 
   def self.float(value)
-    MateValue.new value, Types::Instance.new(2)
+    MateValue.new value, 2
   end
 
   def self.bool(value)
-    MateValue.new value, Types::Instance.new(3)
+    MateValue.new value, 3
   end
 
   def self.array(value)
-    MateValue.new value, Types::Instance.new(4)
+    MateValue.new value, 4
   end
 
   def self.undefined
-    MateValue.new nil, Types::Instance.new(5)
+    MateValue.new nil, 5
   end
 
   def to_s
@@ -39,7 +39,7 @@ class MateValue
       end
       str += ']'
     else
-      str += @value.to_s
+      str += @value.to_s.ljust(4, ' ')
     end
     return str
   end

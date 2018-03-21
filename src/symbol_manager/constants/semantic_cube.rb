@@ -5,9 +5,9 @@ module SemanticCube
   include Operators, Types
 
   module_function
-
+  @cube = nil
   def get
-    cube |= {
+    @cube ||= {
       STRING => {
         STRING    => { ADD   => STRING }.merge(logic_ops(STRING, STRING)),
         INT       => { ADD   => STRING }.merge(common(STRING, INT)),
@@ -57,7 +57,6 @@ module SemanticCube
         UNDEFINED => { }.merge(common(UNDEFINED, UNDEFINED))
       }
     }
-    return cube
   end
 
   def arithmetic_ops(type)

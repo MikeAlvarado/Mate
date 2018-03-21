@@ -16,64 +16,98 @@ module Operators
 
   class Instance
     include Operators
-    def initialize(type)
-      @type = type
+    attr_reader :id
+    def initialize(id)
+      @id = id
+    end
+
+    def to_s
+      case @id
+        when EQUAL
+          '=='
+        when NOT_EQUAL
+          '!='
+        when LESS_EQUAL
+          '<='
+        when GREATER_EQUAL
+          '>='
+        when LESS
+          '<'
+        when GREATER
+          '>'
+        when AND
+          '&&'
+        when OR
+          '||'
+        when MOD
+          '%'
+        when MULTIPLY
+          '*'
+        when DIVIDE
+          '/'
+        when ADD
+          '+'
+        when SUBTRACT
+          '-'
+        when ASSIGN
+          '='
+      end
     end
   
     def equal?
-      @type == EQUAL
+      @id == EQUAL
     end
   
     def not_equal?
-      @type == NOT_EQUAL
+      @id == NOT_EQUAL
     end
   
     def less_equal?
-      @type == LESS_EQUAL
+      @id == LESS_EQUAL
     end
   
     def greater_equal?
-      @type == GREATER_EQUAL
+      @id == GREATER_EQUAL
     end
   
     def less?
-      @type == LESS
+      @id == LESS
     end
   
     def greater?
-      @type == GREATER
+      @id == GREATER
     end
   
     def or?
-      @type == OR
+      @id == OR
     end
   
     def and?
-      @type == AND
+      @id == AND
     end
   
     def mod?
-      @type == MOD
+      @id == MOD
     end
   
     def multiply?
-      @type == MULTIPLY
+      @id == MULTIPLY
     end
   
     def divide?
-      @type == DIVIDE
+      @id == DIVIDE
     end
   
     def add?
-      @type == ADD
+      @id == ADD
     end
   
     def subtract?
-      @type == SUBTRACT
+      @id == SUBTRACT
     end
   
     def assign?
-      @type == ASSIGN
+      @id == ASSIGN
     end
   end
 end

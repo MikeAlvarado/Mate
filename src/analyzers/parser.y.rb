@@ -68,10 +68,7 @@ rule
     CST_STR
     { result = MateValue.string val[0] }
     | CST_INT
-    { puts val[0]
-      result = MateValue.int val[0].to_i
-      puts "Resultado INT: #{result}" 
-    }
+    { result = MateValue.int val[0].to_i }
     | CST_DEC
     { result = MateValue.float val[0].to_f }
     | cst_bool
@@ -151,51 +148,43 @@ rule
     | OP_OR                                           {}
 
   item:
-    term {
-      result = val[0]
-      $symbols.current_scope.evaluate_binary_op
-    } _item                                           {}
+    term _item                                       {}
 
   _item:
     /* empty */                                       {}
     | add_subtract item
-      {
-        $symbols.current_scope.operators.push(val[0])
-      }
+    { binary_operation }
 
   add_subtract:
     OP_ADD
       {
-        result = val[0]
+        operators_push Operators::ADD
       }
     | OP_SUBTRACT
       {
-        result = val[0]
+        operators_push Operators::SUBTRACT
       }
 
   term:
     factor
       {
+        
         result = val[0]
-        $symbols.current_scope.evaluate_binary_op
       }
       _term                                           {}
 
   _term:
     /* empty */                                       {}
-    | multiply_divide term
-      {
-        $symbols.current_scope.operators.push(val[0])
-      }
+    | multiply_divide term                            {}
 
   multiply_divide:
     OP_MULTIPLY
       {
-        result = val[0]
+        operators_push Operators::MULTIPLY
       }
     | OP_DIVIDE
       {
-        result = val[0]
+        operators_push Operators::DIVIDE
       }
 
   factor:
@@ -203,15 +192,12 @@ rule
     | _add_subtract
      value
       {
-        result = val[1]
         $symbols.current_scope.operands.push(val[1])
-        puts "Resultado: #{result}"
       }
 
   _add_subtract:
     /* empty */                                       {}
-    | add_subtract 
-      { $symbols.current_scope.operator.push(val[0])}
+    | add_subtract                                    {}
 
   value:
     constant                                          { result = val[0] }
@@ -226,6 +212,7 @@ end
   require_relative 'lexerino'
   require 'symbol_manager/mate_value'
   require 'symbol_manager/symbols'
+  require 'symbol_manager/constants/operators'
   require 'errors/mate_error'
   $line_number = 0
   $symbols = Symbols.new
@@ -258,6 +245,14 @@ end
 
   def validate_function_defined(name)
     execute_safely -> () { $symbols.validate_function_defined name }
+  end
+
+  def operators_push(operator)
+    $symbols.current_scope.operators.push(Operators::Instance.new operator)
+  end
+
+  def binary_operation
+    $symbols.current_scope.evaluate_binary_op
   end
 
   def on_error(t, val, vstack)

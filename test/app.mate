@@ -1,5 +1,5 @@
 programa prueba {
     funcion suma(x,y) {
-        var resultado = 1 + 1;
+        var resultado = 1 + 2 + 1 + 3;
     }
 }

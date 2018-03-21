@@ -1,8 +1,9 @@
 require_relative 'mate_value'
+require_relative 'quadruple'
 require_relative 'constants/semantic_cube'
 
 class Scope
-  attr_reader :vars, :parent, :temporary_id, :quadruples, :operation_type
+  attr_reader :vars, :parent, :quadruples
   attr_accessor :operators, :operands
 
   def initialize(parent = nil)
@@ -19,10 +20,8 @@ class Scope
     # TODO
     # is the operand an id? -> look for it in the scope
     # cannot trust this approach
-    puts "operands: #{operands}"
     op = operands.pop 
     op = self.var op if self.var? op
-    puts "op: #{op}"
     return op
   end
 
@@ -31,21 +30,25 @@ class Scope
       self.vars[id].value = -1
       self.vars[id].type = type
     else
-      id = temporary_id
-      self.vars[id] = MateValue.new -1, type
-      temporary_id += 1
+      id = @temporary_id
+      self.vars[id] = MateValue.new(id, type)
+      @temporary_id = @temporary_id + 1
     end
     result = self.var id
     return result
   end
 
+  def test_print(name, value)
+    puts "#{name}:\n#{value} \n"
+  end
+
   def parse_operation(right, left, result_id = nil)
     operator = operators.pop
-    result_type = @operation_type[left.type][right.type][operator]
+    result_type = @operation_type[left.type.id][right.type.id][operator.id]
     validate_operation_type left.type, right.type, operator, result_type
 
     result = set_result(result_id, -1, result_type)
-    quadruples.push Quadruple.new operator, left, right, result
+    @quadruples.push Quadruple.new operator, left, right, result
 
     # release_addr left.addr if left.temporal
     # release_addr right.addr if right.temporal
@@ -61,7 +64,7 @@ class Scope
   def evaluate_binary_op
     right = get_operand
     left = get_operand
-    parse_operation right, left
+    result = parse_operation right, left
     operands.push result
   end
 
@@ -83,8 +86,11 @@ class Scope
     return false
   end
 
-  def self.print_quadruples
+  def self.print_quadruples(scope)
     puts "Printing quadruples..."
+    scope.quadruples.each do |q|
+      puts q
+    end
   end
 
   def self.pretty_print(scope)

@@ -13,6 +13,7 @@ class Symbols
   end
 
   def del_scope
+    Scope.print_quadruples @current_scope
     @current_scope = @current_scope.parent unless @current_scope.nil?
   end
 

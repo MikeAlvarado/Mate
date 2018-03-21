@@ -8,13 +8,13 @@ module Types
 
   class Instance
     include Types
-  
+    attr_reader :id
     def initialize(num)
-      @type = num
+      @id = num
     end
   
     def to_s
-      case @type
+      case @id
       when STRING
         'string'
       when INT
@@ -31,27 +31,27 @@ module Types
     end
   
     def string?
-      @type == STRING
+      @id == STRING
     end
   
     def int?
-      @type == INT
+      @id == INT
     end
   
     def float?
-      @type == FLOAT
+      @id == FLOAT
     end
   
     def bool?
-      @type == BOOL
+      @id == BOOL
     end
   
     def array?
-      @type == ARRAY
+      @id == ARRAY
     end
   
     def undefined?
-      @type == UNDEFINED
+      @id == UNDEFINED
     end
   end
 end
