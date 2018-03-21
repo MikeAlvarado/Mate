@@ -4,9 +4,9 @@ class MateError < RuntimeError
     @msg = msg
   end
 
-  def self.invalid_operation(left, right, operator) {
+  def self.invalid_operation(left, right, operator)
     MateError.new "Operación inválida: #{left} #{operator} #{right}"
-  }
+  end
 
   def self.undefined_function(name)
     MateError.new "Error de semántica: la función '#{name}' "\

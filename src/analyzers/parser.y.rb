@@ -68,7 +68,10 @@ rule
     CST_STR
     { result = MateValue.string val[0] }
     | CST_INT
-    { result = MateValue.int val[0].to_i }
+    { puts val[0]
+      result = MateValue.int val[0].to_i
+      puts "Resultado INT: #{result}" 
+    }
     | CST_DEC
     { result = MateValue.float val[0].to_f }
     | cst_bool
@@ -148,28 +151,16 @@ rule
     | OP_OR                                           {}
 
   item:
-    term _item
-      { 
-        result = val[0]
-        #if operators.pop == + || -
-        #right_op = operands.pop, right_type = types.pop
-        #left_op = operands.pop, left_type = types.pop
-        #operator = operators.pop
-        #result_type = semantic_cube[left_type][right_type][operator]
-        #if result_type.nil -> throw exception
-        #result = next available addr
-        #generate quad_input(operator, left_operand, right_operand, result)
-        #quadruple.push(quad_input)
-        #operands.push(result)
-        #types.push(result_type)
-        #if operands were of temporal space, release addr (make available)
-      }
+    term {
+      result = val[0]
+      $symbols.current_scope.evaluate_binary_op
+    } _item                                           {}
 
   _item:
     /* empty */                                       {}
     | add_subtract item
       {
-        $symbols.operators.push(val[0])
+        $symbols.current_scope.operators.push(val[0])
       }
 
   add_subtract:
@@ -183,17 +174,18 @@ rule
       }
 
   term:
-    factor _term
+    factor
       {
         result = val[0]
-        $symbols.evaluate
+        $symbols.current_scope.evaluate_binary_op
       }
+      _term                                           {}
 
   _term:
     /* empty */                                       {}
     | multiply_divide term
       {
-        $symbols.operators.push(val[0])
+        $symbols.current_scope.operators.push(val[0])
       }
 
   multiply_divide:
@@ -208,12 +200,18 @@ rule
 
   factor:
     L_PAREN expression R_PAREN                        {}
-    | add_subtract constant                           {}
-    | value
-      { 
-        result = val[0]
-        $symbols.operands.push(val[0])
+    | _add_subtract
+     value
+      {
+        result = val[1]
+        $symbols.current_scope.operands.push(val[1])
+        puts "Resultado: #{result}"
       }
+
+  _add_subtract:
+    /* empty */                                       {}
+    | add_subtract 
+      { $symbols.current_scope.operator.push(val[0])}
 
   value:
     constant                                          { result = val[0] }

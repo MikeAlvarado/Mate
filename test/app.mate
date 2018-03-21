@@ -1,52 +1,5 @@
 programa prueba {
     funcion suma(x,y) {
-        var resultado = 1, c = [1,2,3,4];
-        var d, e, b;
-        resultado[0] = suma(1, b);
-        resultado[1] = suma(suma(1, b), b);
-        b = resultado[1];
-        resultado[2] = "patito";
-        suma([1, 2, 3, 4]);
-        c = 0;
-        d = cierto;
-        e = falso;
-
-        regresa resultado;
-    }
-
-    funcion resta() {
-        regresa suma();
-    }
-
-    funcion arreglo() {
-        regresa [];
-    }
-
-    funcion llamada() {
-        si(falso) {
-            var x = 0;
-            si(!cierto) {
-                x = 1;
-                si(falso) {
-                    var b = 0;
-                    var y = 1;
-                }
-            }
-        }
-        pero si no {
-            var y = 2;
-        }
-        regresa arreglo();
-    }
-
-    funcion origen() {
-        regresa 10;
-        var b = 0, a, cat;
-        mientras(a > 1 && ((a * b) > "hola")) {
-            var x = 5 + 7 * 8 + (9 / 10 - 2);
-            arreglo(5 * suma(1));
-            cat[5*10] = [0, 0, 0] + [1, 1, 1];
-        }
-        var palabra = "pala" + "bra" + cat;
+        var resultado = 1 + 1;
     }
 }

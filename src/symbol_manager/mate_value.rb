@@ -1,6 +1,6 @@
 require_relative 'constants/types'
 class MateValue
-  attr_reader :value, :type
+  attr_accessor :value, :type
   def initialize(value, type)
     @value = value
     @type = type

@@ -1,53 +1,15 @@
 require_relative 'mate_value'
 require_relative 'scope'
-require_relative 'quadruple'
 require 'errors/mate_error'
 require 'set'
-require_relative 'constants/semantic_cube'
-require_relative 'constants/types'
 
 class Symbols
-  attr_accessor :operands, :operators
+  attr_accessor :current_scope
   def initialize
     @function = Set.new
     @current_scope = nil
     @current_function_name = ''
     @var_waitlist = []
-    @operation_type = SemanticCube.get
-    @operands = []
-    @operators = []
-    @quadruples = []
-    @result = {}
-  end
-
-  def get_operand
-    op = @operands.pop 
-    op = scope.var op if scope.var? op
-    return op
-  end
-
-  def add_to_quadruple(right, left)
-    operator = @operators.pop
-    result_type = @operation_type[left.type][right.type][operator]
-    @result = MateValue.new -1, result_type
-
-    validate_operation_type left.type, right.type, operator, result_type
-    @quadruples.push Quadruple.new operator, left, right, result
-
-    #release_addr left.addr if left.temporal
-    #release_addr right.addr if right.temporal
-  end
-
-  def evaluate_operation
-    right = get_operand
-    left = get_operand
-    add_to_quadruple right, left
-    @operands.push @result
-  end
-
-  def evaluate_assign
-    left = get_operand
-    add_to_quadruple(nil, left)
   end
 
   def del_scope
@@ -67,12 +29,6 @@ class Symbols
 
   def waitlist_var(var)
     @var_waitlist << var
-  end
-
-  def validate_operation_type(left, right, operator, result)
-    if result == Types::UNDEFINED
-      raise MateError.invalid_operation left, right, operator
-    end
   end
 
   def validate_var_defined(name)

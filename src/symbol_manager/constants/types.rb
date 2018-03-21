@@ -5,7 +5,7 @@ module Types
   BOOL      = 3
   ARRAY     = 4
   UNDEFINED = 5
-  
+
   class Instance
     include Types
   
