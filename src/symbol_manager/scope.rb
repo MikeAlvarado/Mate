@@ -52,7 +52,7 @@ class Scope
     right = get_operand
     left = get_operand
     operator = operators.pop
-    result_type = @operation_type[left.type.id][right.type.id][operator.id]
+    result_type = @operation_type[left.type.id][right.type.id][operator.id] || Types::UNDEFINED
     validate_operation_type left.type, right.type, operator, result_type
 
     result_id = @temporary_id

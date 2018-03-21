@@ -6,6 +6,7 @@ module SemanticCube
 
   module_function
   @cube = nil
+
   def get
     @cube ||= {
       STRING => {

@@ -39,7 +39,7 @@ class MateValue
       end
       str += ']'
     else
-      str += @value.to_s.ljust(4, ' ')
+      str += @value.to_s
     end
     return str
   end

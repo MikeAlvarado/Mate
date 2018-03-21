@@ -5,11 +5,11 @@ class MateError < RuntimeError
   end
 
   def self.invalid_operator(operator)
-    MateError.new "Operador inválido: #{operator}"
+    MateError.new "Operador inválido: #{operator}."
   end
 
   def self.invalid_operation(left, right, operator)
-    MateError.new "Operación inválida: #{left} #{operator} #{right}"
+    MateError.new "Operación inválida: #{left} #{operator} #{right}."
   end
 
   def self.undefined_function(name)

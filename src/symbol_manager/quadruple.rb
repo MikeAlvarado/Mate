@@ -8,6 +8,6 @@ class Quadruple
   end
 
   def to_s
-    "#{@operator}\t#{@left_operand}\t#{@right_operand}\t#{@result}"
+    "#{@operator.to_s.ljust(4, ' ')}\t#{@left_operand.to_s.ljust(20, ' ')}\t#{@right_operand.to_s.ljust(20, ' ')}\t#{@result.to_s.ljust(20, ' ')}"
   end
 end

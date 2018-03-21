@@ -45,24 +45,24 @@ rule
     var_declaration                                   {}
     | var_assign                                      {}
     | function_call                                   {}
-    | return                                          {}
+    | return                                          { $returned = true }
 
   var_declaration:
     VAR ID more_declarations                          { def_var val[1], val[2] }
 
   more_declarations:
-    _more_declarations                                { result = MateValue.undefined }
-    | op_assign _more_declarations                    { result = val[0] }
+    _more_declarations                                { result = false }
+    | op_assign _more_declarations                    { result = true }
 
   _more_declarations:
     /* empty */                                       {}
     | COMMA ID more_declarations                      { def_var val[1], val[2] }
 
   var_assign:
-    var_value op_assign                               { assign_var val[0], val[1] }
+    var_value op_assign                               { assign_var(val[0]) }
 
   op_assign:
-    OP_ASSIGN                                         { operators_push Operators::ASSIGN}
+    OP_ASSIGN                                         { operators_push Operators::ASSIGN }
     expression                                        { }
 
   constant:
@@ -129,19 +129,19 @@ rule
 
   _exp:
     /* empty */                                       {}
-    | logic_op exp                                    {}
+    | logic_op exp                                    { binary_operation }
 
   logic_op:
-    OP_GREATER                                        {}
-    | OP_LESS                                         {}
-    | OP_EQUAL                                        {}
-    | OP_GREATER_EQUAL                                {}
-    | OP_LESS_EQUAL                                   {}
-    | OP_NOT_EQUAL                                    {}
+    OP_GREATER                                        { operators_push Operators::GREATER }
+    | OP_LESS                                         { operators_push Operators::LESS }
+    | OP_EQUAL                                        { operators_push Operators::EQUAL }
+    | OP_GREATER_EQUAL                                { operators_push Operators::GREATER_EQUAL }
+    | OP_LESS_EQUAL                                   { operators_push Operators::LESS_EQUAL }
+    | OP_NOT_EQUAL                                    { operators_push Operators::NOT_EQUAL }
 
   and_or:
-    OP_AND                                            {}
-    | OP_OR                                           {}
+    OP_AND                                            { operators_push Operators::AND }
+    | OP_OR                                           { operators_push Operators::OR }
 
   item:
     term _item                                        {}
@@ -210,14 +210,13 @@ end
     execute_safely -> () { $symbols.def_function name }
   end
 
-  def def_var(name, value = MateValue.undefined)
-    execute_safely -> () { $symbols.def_var name, value }
-    assign_operation(name) unless value.undefined?
+  def def_var(name, assigning)
+    execute_safely -> () { $symbols.def_var name }
+    assign_var name if assigning
   end
 
-  def assign_var(name, value = MateValue.undefined)
-    execute_safely -> () { $symbols.assign_var name, value }
-    assign_operation(name) unless value.undefined?
+  def assign_var(name)
+    execute_safely -> () { $symbols.assign_var name }
   end
 
   def validate_function_defined(name)
@@ -233,11 +232,7 @@ end
   end
 
   def binary_operation
-    $symbols.current_scope.evaluate_binary_op
-  end
-
-  def assign_operation
-    $symbols.current_scope.evaluate_assign_op
+    execute_safely -> () { $symbols.current_scope.evaluate_binary_op }
   end
 
   def mate_array(val)

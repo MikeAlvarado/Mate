@@ -44,19 +44,22 @@ class Symbols
     end
   end
 
-  def def_var(name, value = MateValue.undefined)
+  def def_var(name)
     if @function.include? name
       raise MateError.duplicate_id name
     end
     if @current_scope.var? name
       raise MateError.duplicate_var name, @current_function_name
     end
-    @current_scope.vars[name] = value
+    # TODO var = address
+    @current_scope.vars[name] = MateValue.undefined
   end
 
-  def assign_var(name, value)
+  def assign_var(name)
     validate_var_defined name
-    @current_scope.vars[name] = value
+    # TODO var = address
+    @current_scope.vars[name] = MateValue.undefined
+    @current_scope.evaluate_assign_op name
   end
 
   def def_function(name)
