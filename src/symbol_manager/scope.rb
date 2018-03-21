@@ -42,19 +42,6 @@ class Scope
     puts "#{name}:\n#{value} \n"
   end
 
-  def parse_operation(right, left, result_id = nil)
-    operator = operators.pop
-    result_type = @operation_type[left.type.id][right.type.id][operator.id]
-    validate_operation_type left.type, right.type, operator, result_type
-
-    result = set_result(result_id, -1, result_type)
-    @quadruples.push Quadruple.new operator, left, right, result
-
-    # release_addr left.addr if left.temporal
-    # release_addr right.addr if right.temporal
-    return result
-  end
-
   def validate_operation_type(left, right, operator, result)
     if result == Types::UNDEFINED
       raise MateError.invalid_operation left, right, operator
@@ -64,13 +51,35 @@ class Scope
   def evaluate_binary_op
     right = get_operand
     left = get_operand
-    result = parse_operation right, left
+    operator = operators.pop
+    result_type = @operation_type[left.type.id][right.type.id][operator.id]
+    validate_operation_type left.type, right.type, operator, result_type
+
+    result_id = @temporary_id
+    self.vars[result_id] = MateValue.new(result_id, result_type)
+    @temporary_id = @temporary_id + 1
+
+    result = self.vars[result_id]
+    @quadruples.push Quadruple.new operator, left, right, result
+
+    # release_addr left.addr if left.temporal
+    # release_addr right.addr if right.temporal
     operands.push result
   end
 
+  def validate_assign_operator(operator)
+    if operator.id != Operators::ASSIGN
+      raise MateError.invalid_operator operator
+    end
+  end
+
   def evaluate_assign_op(var_id)
-    left = get_operand
-    parse_operation nil, left, var_id
+    operand = get_operand
+    operator = operators.pop
+    validate_assign_operator operator
+    self.vars[var_id].value = -1
+    self.vars[var_id].type = operand.type
+    @quadruples.push Quadruple.new operator, operand, nil, self.vars[var_id]
   end
 
   def var(key)

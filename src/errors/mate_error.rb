@@ -4,6 +4,10 @@ class MateError < RuntimeError
     @msg = msg
   end
 
+  def self.invalid_operator(operator)
+    MateError.new "Operador inválido: #{operator}"
+  end
+
   def self.invalid_operation(left, right, operator)
     MateError.new "Operación inválida: #{left} #{operator} #{right}"
   end

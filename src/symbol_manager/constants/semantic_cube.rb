@@ -75,7 +75,6 @@ module SemanticCube
       NOT_EQUAL => BOOL,
       OR => right_type == UNDEFINED ? left_type : right_type,
       AND => right_type == UNDEFINED ? right_type : left_type,
-      ASSIGN => right_type
     }
   end
 

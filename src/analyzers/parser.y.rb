@@ -62,17 +62,14 @@ rule
     var_value op_assign                               { assign_var val[0], val[1] }
 
   op_assign:
-    OP_ASSIGN expression                              { result = val[1] }
+    OP_ASSIGN                                         { operators_push Operators::ASSIGN}
+    expression                                        { }
 
   constant:
-    CST_STR
-    { result = MateValue.string val[0] }
-    | CST_INT
-    { result = MateValue.int val[0].to_i }
-    | CST_DEC
-    { result = MateValue.float val[0].to_f }
-    | cst_bool
-    { result = MateValue.bool val[0] }
+    CST_STR                                           { result = MateValue.string val[0] }
+    | CST_INT                                         { result = MateValue.int val[0].to_i }
+    | CST_DEC                                         { result = MateValue.float val[0].to_f }
+    | cst_bool                                        { result = MateValue.bool val[0] }
 
   cst_bool:
     TRUE                                              { result = true }
@@ -82,8 +79,7 @@ rule
     ID array_access                                   { result = val[0] }
 
   array:
-    L_SQ_BRACKET values R_SQ_BRACKET
-    { result = MateValue.array val[1].to_a.flatten.compact }
+    L_SQ_BRACKET values R_SQ_BRACKET                  { result = mate_array(val[1]) }
 
   values:
     /* empty */                                       {}
@@ -148,48 +144,31 @@ rule
     | OP_OR                                           {}
 
   item:
-    term _item                                       {}
+    term _item                                        {}
 
   _item:
     /* empty */                                       {}
-    | add_subtract item
-    { binary_operation }
+    | add_subtract item                               { binary_operation }
 
   add_subtract:
-    OP_ADD
-      {
-        operators_push Operators::ADD
-      }
-    | OP_SUBTRACT
-      {
-        operators_push Operators::SUBTRACT
-      }
+    OP_ADD                                            { operators_push Operators::ADD }
+    | OP_SUBTRACT                                     { operators_push Operators::SUBTRACT }
 
   term:
     factor _term                                      {}
 
   _term:
     /* empty */                                       {}
-    | multiply_divide term
-    { binary_operation }
+    | multiply_divide term                            { binary_operation }
 
   multiply_divide:
-    OP_MULTIPLY
-      {
-        operators_push Operators::MULTIPLY
-      }
-    | OP_DIVIDE
-      {
-        operators_push Operators::DIVIDE
-      }
+    OP_MULTIPLY                                       { operators_push Operators::MULTIPLY }
+    | OP_DIVIDE                                       { operators_push Operators::DIVIDE }
 
   factor:
     L_PAREN expression R_PAREN                        {}
     | _add_subtract
-     value
-      {
-        $symbols.current_scope.operands.push(val[1])
-      }
+     value                                            { operands_push val[1] }
 
   _add_subtract:
     /* empty */                                       {}
@@ -233,10 +212,12 @@ end
 
   def def_var(name, value = MateValue.undefined)
     execute_safely -> () { $symbols.def_var name, value }
+    assign_operation(name) unless value.undefined?
   end
 
   def assign_var(name, value = MateValue.undefined)
     execute_safely -> () { $symbols.assign_var name, value }
+    assign_operation(name) unless value.undefined?
   end
 
   def validate_function_defined(name)
@@ -247,8 +228,20 @@ end
     $symbols.current_scope.operators.push(Operators::Instance.new operator)
   end
 
+  def operands_push(operand)
+    $symbols.current_scope.operands.push(operand)
+  end
+
   def binary_operation
     $symbols.current_scope.evaluate_binary_op
+  end
+
+  def assign_operation
+    $symbols.current_scope.evaluate_assign_op
+  end
+
+  def mate_array(val)
+    MateValue.array val.to_a.flatten.compact
   end
 
   def on_error(t, val, vstack)
