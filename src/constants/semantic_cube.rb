@@ -7,7 +7,7 @@ module SemanticCube
   module_function
   @cube = nil
 
-  def get
+  def resolve(left, right, operator)
     @cube ||= {
       STRING => {
         STRING    => { ADD   => STRING }.merge(logic_ops(STRING, STRING)),
@@ -58,6 +58,7 @@ module SemanticCube
         UNDEFINED => { }.merge(common(UNDEFINED, UNDEFINED))
       }
     }
+    @cube[left.id][right.id][operator.id] || Types::UNDEFINED
   end
 
   def arithmetic_ops(type)
