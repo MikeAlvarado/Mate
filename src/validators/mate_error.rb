@@ -4,6 +4,10 @@ class MateError < RuntimeError
     @msg = msg
   end
 
+  def self.reserved_word(symbol)
+    MateError.new "Error de semántica: '#{symbol}' es una palabra reservada."
+  end
+
   def self.invalid_operator(operator)
     MateError.new "Operador inválido: #{operator}."
   end

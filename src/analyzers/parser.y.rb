@@ -23,7 +23,7 @@ rule
 
   function_id:
     ID                                                { @parser.def_func val[0] }
-    | ORIGIN                                          { @parser.def_func val[0] }
+    | ORIGIN                                          { @parser.def_origin }
 
   params:
     /* empty */                                       {}
@@ -209,6 +209,6 @@ end
   end
 
   def on_error(t, val, vstack)
-    puts "Símbolo inesperado #{val[0].inspect} (#{token_to_str(t) || '?'}) "\
+    puts "Símbolo inesperado #{val.inspect} (#{token_to_str(t) || '?'}) "\
     "en la línea #{$line_number}"
   end

@@ -26,14 +26,14 @@ module IR
     end
 
     def get_operand(memory)
-      op = operands.pop
+      op = @operands.pop
       return op if op.is_a?(Memory::Value) || op.is_a?(Memory::Entry)
       memory.get op
     end
 
     def assign_var(name, memory)
       operand = get_operand memory
-      operator = operators.pop
+      operator = @operators.pop
       Validate::operator_type operator, Operators::ASSIGN
       memory.update name, operand.type
       @quadruples.push Quadruple.new(Instruction.new(operator.id), operand, nil, memory.get(name))
@@ -42,7 +42,7 @@ module IR
     def eval_binary_op(memory)
       right = get_operand memory
       left = get_operand memory
-      operator = operators.pop
+      operator = @operators.pop
 
       result_type = SemanticCube.resolve(left.type, right.type, operator)
       Validate::operation_type left.type, right.type, operator, result_type

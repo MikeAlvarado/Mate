@@ -15,9 +15,6 @@ rule
                           elsif text == "no" then return        [:NO,       text]
                           elsif text == "regresa" then return   [:RETURN,   text]
                           elsif text == "mientras" then return  [:WHILE,    text]
-                          elsif text == "lee" then return       [:READ,     text]
-                          elsif text == "escribe" then return   [:WRITE,    text]
-                          elsif text == "concatena" then return [:CONCAT,   text]
                           elsif text == "cierto" then return    [:TRUE,     text]
                           elsif text == "falso" then return     [:FALSE,    text]
                           else return [:ID, text] end }

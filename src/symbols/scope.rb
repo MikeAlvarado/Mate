@@ -1,3 +1,5 @@
+require 'constants/reserved_words'
+require 'symbols/function'
 require 'validators/validate'
 
 class Scope
@@ -9,7 +11,14 @@ class Scope
     @name = name
   end
 
+  def def_origin
+    symbol = Symbols::Function.new ReservedWords::ORIGIN
+    Validate::symbol_is_new self, symbol
+    @symbols[symbol.name] = symbol
+  end
+
   def new_symbol(symbol)
+    Validate::symbol_is_not_reserved symbol
     Validate::symbol_is_new self, symbol
     @symbols[symbol.name] = symbol
   end

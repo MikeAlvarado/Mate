@@ -23,6 +23,13 @@ module Parser
       @lookahead_scope = Scope.new name
     end
 
+    def def_origin
+      Utility::execute_safely -> () {
+        @current_scope.def_origin
+      }
+      @lookahead_scope = Scope.new ReservedWords::ORIGIN, @current_scope
+    end
+
     def def_func(name)
       Utility::execute_safely -> () {
         @current_scope.new_symbol Symbols::Function.new name
