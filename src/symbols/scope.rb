@@ -14,9 +14,9 @@ class Scope
     @symbols[symbol.name] = symbol
   end
 
-  def symbol?(name, type)
-    return true if @symbols.key?(name) && @symbols[name].is_a?(type)
+  def symbol?(symbol)
+    return true if @symbols.key?(symbol.name) && @symbols[symbol.name].is_a?(symbol.class)
     return false if @parent == nil
-    @parent.symbol? name, type
+    @parent.symbol? symbol
   end
 end

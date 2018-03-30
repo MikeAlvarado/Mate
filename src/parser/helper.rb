@@ -6,7 +6,6 @@ require 'symbols/function'
 require 'symbols/program'
 require 'symbols/scope'
 require 'symbols/var'
-require 'validators/mate_error'
 
 module Parser
   class Helper
@@ -18,14 +17,14 @@ module Parser
     end
 
     def def_program(name)
-      self.class.execute_safely -> () {
+      Utility::execute_safely -> () {
         @current_scope.new_symbol Symbols::Program.new name
       }
       @lookahead_scope = Scope.new name
     end
 
     def def_func(name)
-      self.class.execute_safely -> () {
+      Utility::execute_safely -> () {
         @current_scope.new_symbol Symbols::Function.new name
       }
       @lookahead_scope = Scope.new name, @current_scope
@@ -42,18 +41,17 @@ module Parser
 
     def def_scope
       @current_scope = @lookahead_scope.nil? ?
-        Scope.new(@current_scope.name, @current_scope)
-        : @lookahead_scope
+        Scope.new(@current_scope.name, @current_scope) : @lookahead_scope
       @lookahead_scope = nil
     end
 
     def del_scope
-      self.class.execute_safely -> () { Validate::can_delete_scope @current_scope }
+      Utility::execute_safely -> () { Validate::can_delete_scope @current_scope }
       @current_scope = @current_scope.parent
     end
 
     def ass_var(name)
-      self.class.execute_safely -> () { @ir.assign_var name, @memory }
+      Utility::execute_safely -> () { @ir.assign_var name, @memory }
     end
 
     def new_operator(operator)
@@ -65,39 +63,56 @@ module Parser
     end
 
     def eval_binary_op
-      self.class.execute_safely -> () { @ir.eval_binary_op @memory }
+      Utility::execute_safely -> () { @ir.eval_binary_op @memory }
     end
 
     def eval_negation
-      self.class.execute_safely -> () { @ir.eval_negation @memory }
+      Utility::execute_safely -> () { @ir.eval_negation @memory }
     end
 
     def call_function(name)
-      self.class.execute_safely -> () { 
-        Validate::symbol_exists @current_scope, name, Symbols::Function
+      Utility::execute_safely -> () { 
+        Validate::symbol_exists @current_scope, Symbols::Function.new(name)
       }
     end
 
+    def loop_condition_start
+      Utility::execute_safely -> () { @ir.loop_condition_start }
+    end
+
+    def loop_condition_end
+      Utility::execute_safely -> () { @ir.loop_condition_end @memory }
+    end
+
+    def loop_end
+      Utility::execute_safely -> () { @ir.loop_end }
+    end
+
+    def if_condition
+      Utility::execute_safely -> () { @ir.if_condition @memory }
+    end
+
+    def if_end
+      Utility::execute_safely -> () { @ir.if_end }
+    end
+
+    def else_start
+      Utility::execute_safely -> () { @ir.else_start }
+    end
+
     def program_complete(name)
-      self.class.execute_safely -> () {
-        Validate::symbol_exists @current_scope, ReservedWords::ORIGIN, Symbols::Function
+      Utility::execute_safely -> () {
+        Validate::symbol_exists @current_scope, Symbols::Function.new(ReservedWords::ORIGIN)
       }
+      @ir.program_end
+      puts "Programa '#{name}' compilado.\n\n"
       puts @ir
-      puts "Programa #{name} compilado."
     end
 
     private
 
-    def self.execute_safely(process)
-      begin
-        process.call()
-      rescue MateError => err
-        abort("#{err.msg} Error en la línea #{$line_number}")
-      end
-    end
-
     def new_var(scope, name)
-      self.class.execute_safely -> () {
+      Utility::execute_safely -> () {
         scope.new_symbol Symbols::Var.new name
         @memory.alloc name
       }

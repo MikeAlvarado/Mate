@@ -3,12 +3,12 @@ require 'symbols/base'
 require_relative 'mate_error'
 
 module Validate
-  def self.symbol_is_new(scope, symbol, type = Symbols::Base)
-    raise type.duplicate_err scope.name if scope.symbol? symbol.name, type
+  def self.symbol_is_new(scope, symbol = Symbols::Base.new('undefined'))
+    raise symbol.duplicate_err scope.name if scope.symbol? symbol
   end
 
-  def self.symbol_exists(scope, name, type = Symbols::Base)
-    raise type.undefined scope.name unless scope.symbol? name, type
+  def self.symbol_exists(scope, symbol = Symbols::Base.new('undefined'))
+    raise symbol.undefined_err scope.name unless scope.symbol? symbol
   end
 
   def self.can_delete_scope(scope)

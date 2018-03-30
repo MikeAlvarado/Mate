@@ -109,17 +109,18 @@ rule
     RETURN expression                                 {}
 
   while:
-    WHILE condition_block                             {}
+    WHILE                                             { @parser.loop_condition_start}
+    L_PAREN expression R_PAREN                        { @parser.loop_condition_end }
+    block                                             { @parser.loop_end }
 
   if_else:
-    IF condition_block _if_else                       {}
+    IF L_PAREN expression R_PAREN                     { @parser.if_condition }
+    block _if_else                                    { @parser.if_end }
 
   _if_else:
     /* empty */                                       {}
-    | BUT IF NO block                                 {}
-
-  condition_block:
-    L_PAREN expression R_PAREN block                  {}
+    | BUT IF NO                                       { @parser.else_start }
+    block                                             {}
 
   expression:
     not exp _expression                               { @parser.eval_negation if val[0] }

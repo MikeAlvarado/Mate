@@ -1,5 +1,6 @@
 class Quadruple
-  attr_reader :operator, :left_operand, :right_operand, :result
+  attr_reader :operator, :left_operand, :right_operand
+  attr_accessor :result
   def initialize(operator, left_operand, right_operand, result)
     @operator = operator
     @left_operand = left_operand
