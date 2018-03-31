@@ -28,6 +28,7 @@ module Parser
         @current_scope.def_origin
       }
       @lookahead_scope = Scope.new ReservedWords::ORIGIN, @current_scope
+      @lookahead_scope.def_func @ir
     end
 
     def def_func(name)
@@ -35,6 +36,7 @@ module Parser
         @current_scope.new_symbol Symbols::Function.new name
       }
       @lookahead_scope = Scope.new name, @current_scope
+      @lookahead_scope.def_func @ir
     end
 
     def def_var(name, assigning)
@@ -43,7 +45,10 @@ module Parser
     end
 
     def def_param(name)
-      new_var @lookahead_scope, name
+      Utility::execute_safely -> () {
+        @lookahead_scope.add_param Symbols::Var.new name
+        @memory.alloc name
+      }
     end
 
     def def_scope

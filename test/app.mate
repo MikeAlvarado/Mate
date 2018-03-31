@@ -9,15 +9,15 @@ programa prueba {
         regresa resultado;
     }
 
-    funcion resta() {
+    funcion resta {
         regresa suma();
     }
 
-    funcion arreglo() {
+    funcion arreglo {
         regresa [];
     }
 
-    funcion llamada() {
+    funcion llamada {
         si(falso) {
             var x = 0;
             si(!cierto) {
@@ -34,7 +34,7 @@ programa prueba {
         regresa arreglo();
     }
 
-    funcion origen() {
+    funcion origen {
         regresa 10;
         var b = 0, a = 10, cat = "abcdefg";
         mientras(a > 1 && ((a * b) > 5)) {

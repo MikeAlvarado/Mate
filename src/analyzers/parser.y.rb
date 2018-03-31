@@ -19,21 +19,24 @@ rule
     | function _functions                             {}
 
   function:
-    FUNCTION function_id L_PAREN params R_PAREN block {}
-
-  function_id:
-    ID                                                { @parser.def_func val[0] }
-    | ORIGIN                                          { @parser.def_origin }
+    FUNCTION _function params block                   {}
+    
+  _function:
+    ORIGIN                                            { @parser.def_origin }
+    | ID                                              { @parser.def_func val[0] }
 
   params:
     /* empty */                                       {}
-    | ID _params
-    { @parser.def_param val[0] }
+    | L_PAREN _params R_PAREN                         {}
 
   _params:
     /* empty */                                       {}
-    | COMMA ID _params
-    { @parser.def_param val[1] }
+    | ID more_params
+    { @parser.def_param val[0] }
+
+    more_params:
+    /* empty */                                       {}
+    | COMMA ID _params                                { @parser.def_param val[1] }
 
   block:
     L_BRACKET                                         { @parser.def_scope }

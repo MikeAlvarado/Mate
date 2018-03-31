@@ -112,6 +112,10 @@ module IR
       s
     end
 
+    def get_instruction_number
+      @quadruples.length - 1
+    end
+
     private
 
     def test_print(name, value)

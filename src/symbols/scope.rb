@@ -8,7 +8,15 @@ class Scope
   def initialize(name, parent = nil)
     @parent = parent
     @symbols = Hash.new
+    @params = Hash.new
     @name = name
+    @initial_instruction = nil
+    @functions = Hash.new
+  end
+
+  def def_func(ir)
+    @initial_instruction = ir.get_instruction_number
+    @parent.functions[name] = self
   end
 
   def def_origin
@@ -21,6 +29,12 @@ class Scope
     Validate::symbol_is_not_reserved symbol
     Validate::symbol_is_new self, symbol
     @symbols[symbol.name] = symbol
+  end
+
+  def add_param(symbol)
+    Validate::symbol_is_not_reserved symbol
+    Validate::symbol_is_new self, symbol
+    @params[symbol.name] = symbol
   end
 
   def symbol?(symbol)
