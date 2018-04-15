@@ -2,76 +2,74 @@ require 'constants/operators'
 require 'constants/reserved_words'
 require 'ir/quadruples'
 require 'memory/manager'
-require 'symbols/function'
 require 'symbols/program'
-require 'symbols/scope'
-require 'symbols/var'
+require_relative 'function_call'
 
 module Parser
   class Helper
     def initialize
-      @current_scope = Scope.new nil
-      @lookahead_scope = nil
+      @function_calls = []
       @ir = IR::Quadruples.new #'ir' is short for 'intermediate representation'
       @memory = Memory::Manager.new
+      @program = nil
     end
 
-    def def_program(name)
+    def ass_var(var)
       Utility::execute_safely -> () {
-        @current_scope.new_symbol Symbols::Program.new name
+        Validate::var_exists @program.current_function, var
+        @ir.assign_var var, @memory
       }
-      @lookahead_scope = Scope.new name
     end
 
-    def def_origin
-      Utility::execute_safely -> () {
-        @current_scope.def_origin
-      }
-      @lookahead_scope = Scope.new ReservedWords::ORIGIN, @current_scope
-      @lookahead_scope.def_func @ir
+    def call_func
+      @ir.func_call @memory, @function_calls.pop.func
     end
 
     def def_func(name)
       Utility::execute_safely -> () {
-        @current_scope.new_symbol Symbols::Function.new name
+        @program.def_func name, @ir
       }
-      @lookahead_scope = Scope.new name, @current_scope
-      @lookahead_scope.def_func @ir
     end
 
-    def def_var(name, assigning)
-      new_var @current_scope, name
-      ass_var name if assigning
+    def def_origin
+      Utility::execute_safely -> () {
+        @program.def_origin @ir
+      }
     end
 
     def def_param(name)
       Utility::execute_safely -> () {
-        @lookahead_scope.add_param Symbols::Var.new name
+        @program.def_param name
         @memory.alloc name
       }
     end
 
+    def def_program(name)
+      Utility::execute_safely -> () {
+          program = Symbols::Program.new name
+          Validate::symbol_is_not_reserved program
+          @program = program
+      }
+    end
+
     def def_scope
-      @current_scope = @lookahead_scope.nil? ?
-        Scope.new(@current_scope.name, @current_scope) : @lookahead_scope
-      @lookahead_scope = nil
+      @program.def_scope
+    end
+
+    def def_var(name, assigning)
+      Utility::execute_safely -> () {
+        new_var = @program.def_var name
+        @memory.alloc name
+        ass_var new_var if assigning
+      }
     end
 
     def del_scope
-      Utility::execute_safely -> () { Validate::can_delete_scope @current_scope }
-      @current_scope = @current_scope.parent
+      @program.del_scope
     end
 
-    def ass_var(name)
-      Utility::execute_safely -> () { @ir.assign_var name, @memory }
-    end
-
-    def new_operator(operator)
-      @ir.new_operator Operator.new operator
-    end
-
-    def new_operand(operand)
-      @ir.new_operand operand
+    def else_start
+      Utility::execute_safely -> () { @ir.else_start }
     end
 
     def eval_binary_op
@@ -82,22 +80,16 @@ module Parser
       Utility::execute_safely -> () { @ir.eval_negation @memory }
     end
 
-    def call_function(name)
-      Utility::execute_safely -> () { 
-        Validate::symbol_exists @current_scope, Symbols::Function.new(name)
-      }
+    def finished_statement_function_call
+      @ir.finished_statement_function_call
     end
 
-    def loop_condition_start
-      Utility::execute_safely -> () { @ir.loop_condition_start }
+    def func_end
+      @ir.func_end @program.current_function
     end
 
-    def loop_condition_end
-      Utility::execute_safely -> () { @ir.loop_condition_end @memory }
-    end
-
-    def loop_end
-      Utility::execute_safely -> () { @ir.loop_end }
+    def func_return
+      @ir.func_return @memory, @program.current_function
     end
 
     def if_condition
@@ -108,26 +100,65 @@ module Parser
       Utility::execute_safely -> () { @ir.if_end }
     end
 
-    def else_start
-      Utility::execute_safely -> () { @ir.else_start }
+    def loop_condition_end
+      Utility::execute_safely -> () { @ir.loop_condition_end @memory }
+    end
+
+    def loop_condition_start
+      Utility::execute_safely -> () { @ir.loop_condition_start }
+    end
+
+    def loop_end
+      Utility::execute_safely -> () { @ir.loop_end }
     end
 
     def program_complete(name)
       Utility::execute_safely -> () {
-        Validate::symbol_exists @current_scope, Symbols::Function.new(ReservedWords::ORIGIN)
+        Validate::function_exists @program, ReservedWords::ORIGIN
       }
       @ir.program_end
-      puts "Programa '#{name}' compilado.\n\n"
       puts @ir
+      puts "Programa '#{name}' compilado.\n\n"
     end
 
-    private
-
-    def new_var(scope, name)
+    def new_call(name)
       Utility::execute_safely -> () {
-        scope.new_symbol Symbols::Var.new name
-        @memory.alloc name
+        func = @program.get_func name
+        @function_calls << FunctionCall.new(func)
+        @ir.func_prep func
       }
+    end
+
+    def new_call_param
+      @ir.param @memory, @function_calls.last
+      @function_calls.last.increase_param_counter
+    end
+
+    def new_operand(operand)
+      unless operand.nil?
+        Utility::execute_safely -> () {
+          Validate::var_exists @program.current_function, operand
+        } if operand.is_a?(Symbols::Var)
+        @ir.new_operand operand
+      end
+    end
+
+    def new_operator(operator)
+      @ir.new_operator Operator.new operator
+    end
+
+    def read
+      @ir.read @memory
+    end
+
+    def verify_params
+      Utility::execute_safely -> () {
+        @function_calls.last.verify_params
+      }
+    end
+
+    def write
+      @ir.write @memory
     end
   end
 end

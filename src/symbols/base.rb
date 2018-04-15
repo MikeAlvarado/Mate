@@ -6,6 +6,10 @@ module Symbols
     def initialize(name)
       @name = name
     end
+    
+    def to_s
+      @name
+    end
 
     def undefined_err(scope_name)
       MateError.new "#{Base.message_detail scope_name}"\

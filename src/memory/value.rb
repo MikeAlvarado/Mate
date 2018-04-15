@@ -2,10 +2,11 @@ require 'constants/types'
 
 module Memory
   class Value
-    attr_accessor :value, :type
-    def initialize(value, type)
+    attr_accessor :value, :type, :is_param
+    def initialize(value, type, is_param = false)
       @value = value
-      @type = Type.new(type)
+      @type = Type.new(type) unless is_param
+      @is_param = is_param
     end
 
     def self.string(value)

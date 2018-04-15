@@ -17,6 +17,10 @@ class MateError < RuntimeError
   end
 
   def self.invalid_operand(operand, type)
-    MateError.new "Operando inválido: #{operand}. Se esperaba un tipo #{type}"
+    MateError.new "Operando inválido: #{operand}. Se esperaba un tipo #{type}."
+  end
+
+  def self.invalid_operand(operand)
+    MateError.new "Operando inválido."
   end
 end

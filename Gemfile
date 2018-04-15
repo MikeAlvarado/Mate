@@ -1,5 +1,6 @@
 source 'https://rubygems.org'
 
+gem 'byebug'
 gem 'debase', '0.2.2'
 gem 'racc'
 gem 'rake'

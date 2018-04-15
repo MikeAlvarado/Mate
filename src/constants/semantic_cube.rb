@@ -15,6 +15,7 @@ module SemanticCube
         FLOAT     => { ADD   => STRING }.merge(common(STRING, FLOAT)),
         BOOL      => { }.merge(common(STRING, BOOL)),
         ARRAY     => { }.merge(common(STRING, ARRAY)),
+        INVALID   => { }.merge(common(STRING, INVALID)),
         UNDEFINED => { }.merge(common(STRING, UNDEFINED))
       },
       INT => {
@@ -23,6 +24,7 @@ module SemanticCube
         FLOAT     => { }.merge(logic_ops(INT, FLOAT)).merge(arithmetic_ops(FLOAT)),
         BOOL      => { }.merge(common(INT, BOOL)),
         ARRAY     => { }.merge(common(INT, ARRAY)),
+        INVALID   => { }.merge(common(INT, INVALID)),
         UNDEFINED => { }.merge(common(INT, UNDEFINED))
       },
       FLOAT => {
@@ -31,6 +33,7 @@ module SemanticCube
         FLOAT     => { }.merge(logic_ops(FLOAT, FLOAT)).merge(arithmetic_ops(FLOAT)),
         BOOL      => { }.merge(common(FLOAT, BOOL)),
         ARRAY     => { }.merge(common(FLOAT, ARRAY)),
+        INVALID   => { }.merge(common(FLOAT, INVALID)),
         UNDEFINED => { }.merge(common(FLOAT, UNDEFINED))
       },
       BOOL => {
@@ -39,6 +42,7 @@ module SemanticCube
         FLOAT     => { }.merge(common(BOOL, FLOAT)),
         BOOL      => { }.merge(common(BOOL, BOOL)),
         ARRAY     => { }.merge(common(BOOL, ARRAY)),
+        INVALID   => { }.merge(common(BOOL, INVALID)),
         UNDEFINED => { }.merge(common(BOOL, UNDEFINED))
       },
       ARRAY => {
@@ -47,18 +51,28 @@ module SemanticCube
         FLOAT     => { }.merge(common(ARRAY, FLOAT)),
         BOOL      => { }.merge(common(ARRAY, BOOL)),
         ARRAY     => { ADD => ARRAY, SUBTRACT => ARRAY }.merge(common(ARRAY, ARRAY)),
+        INVALID   => { }.merge(common(ARRAY, INVALID)),
         UNDEFINED => { }.merge(common(ARRAY, UNDEFINED))
       },
+      INVALID => {
+        STRING    => { }.merge(common(INVALID, STRING)),
+        INT       => { }.merge(common(INVALID, INT)),
+        FLOAT     => { }.merge(common(INVALID, FLOAT)),
+        BOOL      => { }.merge(common(INVALID, BOOL)),
+        ARRAY     => { }.merge(common(INVALID, ARRAY)),
+        INVALID   => { }.merge(common(INVALID, INVALID))
+      },
       UNDEFINED => {
-        STRING    => { }.merge(common(UNDEFINED, STRING)),
-        INT       => { }.merge(common(UNDEFINED, INT)),
-        FLOAT     => { }.merge(common(UNDEFINED, FLOAT)),
+        STRING    => { ADD => UNDEFINED }.merge(common(UNDEFINED, STRING)),
+        INT       => { }.merge(logic_ops(UNDEFINED, INT)).merge(arithmetic_ops(UNDEFINED)),
+        FLOAT     => { }.merge(logic_ops(UNDEFINED, FLOAT)).merge(arithmetic_ops(UNDEFINED)),
         BOOL      => { }.merge(common(UNDEFINED, BOOL)),
-        ARRAY     => { }.merge(common(UNDEFINED, ARRAY)),
-        UNDEFINED => { }.merge(common(UNDEFINED, UNDEFINED))
+        ARRAY     => { ADD => UNDEFINED, SUBTRACT => UNDEFINED }.merge(common(UNDEFINED, ARRAY)),
+        INVALID   => { }.merge(common(UNDEFINED, INVALID)),
+        UNDEFINED => { ADD => UNDEFINED, SUBTRACT => UNDEFINED }.merge(logic_ops(UNDEFINED, UNDEFINED)).merge(arithmetic_ops(UNDEFINED))
       }
     }
-    @cube[left.id][right.id][operator.id] || Types::UNDEFINED
+    @cube[left.id][right.id][operator.id] || INVALID
   end
 
   def arithmetic_ops(type)

@@ -4,7 +4,8 @@ module Types
   FLOAT     = 2
   BOOL      = 3
   ARRAY     = 4
-  UNDEFINED = 5
+  INVALID   = 5
+  UNDEFINED = 6
 end
 
 class Type
@@ -28,6 +29,8 @@ class Type
       'array'
     when UNDEFINED
       'undefined'
+    when INVALID
+      'invalid'
     end
   end
 
@@ -53,5 +56,9 @@ class Type
 
   def undefined?
     @id == UNDEFINED
+  end
+
+  def invalid?
+    @id == INVALID
   end
 end

@@ -1,7 +1,7 @@
 module Memory
   class Entry
     attr_reader :position
-    attr_accessor :type, :is_temp
+    attr_accessor :is_temp, :type
     def initialize(position, type, is_temp = false)
       @position = position
       @type = Type.new(type)
@@ -9,7 +9,7 @@ module Memory
     end
 
     def to_s
-      "[#{@type.to_s}, %%#{@position}]"
+        "[#{@type.to_s}, %%#{@position}]"
     end
   end
 end

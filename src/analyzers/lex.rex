@@ -17,6 +17,8 @@ rule
                           elsif text == "mientras" then return  [:WHILE,    text]
                           elsif text == "cierto" then return    [:TRUE,     text]
                           elsif text == "falso" then return     [:FALSE,    text]
+                          elsif text == "escribe" then return   [:WRITE,    text]
+                          elsif text == "lee" then return       [:READ,     text]
                           else return [:ID, text] end }
 
   [0-9]+\.[0-9]+         { [:CST_DEC,           text.to_f] }

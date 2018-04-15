@@ -1,9 +1,17 @@
 require 'constants/operators'
 module Instructions
   include Operators
+  GOSUB         = 14
   GOTO          = 15
   GOTOF         = 16
-  EOP           = 17 # End of program
+  EOF           = 17 # End of function
+  EOP           = 18 # End of program
+  ERA           = 19 # Activation record expansion
+  PARAM         = 20
+  READ          = 21
+  RETURN        = 22
+  SOF           = 23
+  WRITE         = 24
 end
 
 class Instruction
@@ -15,6 +23,22 @@ class Instruction
 
   def to_s
     case @id
+      when RETURN
+        'return'
+      when SOF
+        'sof'
+      when WRITE
+        'write'
+      when READ
+        'read'
+      when GOSUB
+        'gosub'
+      when PARAM
+        'param'
+      when ERA
+        'era'
+      when EOF
+        'eof'
       when EOP
         'eop'
       when GOTO
@@ -52,6 +76,38 @@ class Instruction
       when NOT
         '!'
     end
+  end
+
+  def return?
+    @id == RETURN
+  end
+
+  def sof?
+    @id == SOF
+  end
+
+  def write?
+    @id == WRITE
+  end
+
+  def read?
+    @id == READ
+  end
+
+  def gosub?
+    @id == GOSUB
+  end
+
+  def param?
+    @id == PARAM
+  end
+
+  def era?
+    @id == ERA
+  end
+
+  def eof?
+    @id == EOF
   end
 
   def eop?

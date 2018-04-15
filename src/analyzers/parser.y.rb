@@ -1,14 +1,13 @@
 class Mate
 rule
   program:
+    program_def L_BRACKET functions R_BRACKET {@parser.program_complete val[0]}
+
+  program_def:
     PROGRAM ID
-    { @parser.def_program val[1] }
-    L_BRACKET
-    { @parser.def_scope }
-    functions R_BRACKET
     {
-      @parser.program_complete val[1]
-      @parser.del_scope
+      result = val[1]
+      @parser.def_program val[1]
     }
 
   functions:
@@ -19,8 +18,8 @@ rule
     | function _functions                             {}
 
   function:
-    FUNCTION _function params block                   {}
-    
+    FUNCTION _function params block                   { @parser.func_end }
+
   _function:
     ORIGIN                                            { @parser.def_origin }
     | ID                                              { @parser.def_func val[0] }
@@ -34,9 +33,9 @@ rule
     | ID more_params
     { @parser.def_param val[0] }
 
-    more_params:
-    /* empty */                                       {}
-    | COMMA ID _params                                { @parser.def_param val[1] }
+  more_params:
+  /* empty */                                         {}
+  | COMMA ID _params                                  { @parser.def_param val[1] }
 
   block:
     L_BRACKET                                         { @parser.def_scope }
@@ -55,7 +54,7 @@ rule
   simple_statement:
     var_declaration                                   {}
     | var_assign                                      {}
-    | function_call                                   {}
+    | function_call                                   { @parser.finished_statement_function_call }
     | return                                          {}
 
   var_declaration:
@@ -84,10 +83,14 @@ rule
 
   cst_bool:
     TRUE                                              { result = true }
-    | FALSE                                           { result = false}
+    | FALSE                                           { result = false }
 
   var_value:
-    ID array_access                                   { result = val[0] }
+    ID array_access
+    {
+      result = Symbols::Var.new val[0]
+      result.is_array = val[1]
+    }
 
   array:
     L_SQ_BRACKET values R_SQ_BRACKET                  { result = Parser::Utility::new_array val[1] }
@@ -101,15 +104,39 @@ rule
     | COMMA expression _values                        { result = [val[1], val[2]] }
 
   array_access:
-    /* empty */                                       {}
-    | L_SQ_BRACKET expression R_SQ_BRACKET            {}
+    /* empty */                                       { result = false }
+    | L_SQ_BRACKET expression R_SQ_BRACKET            { result = true }
 
   function_call:
-    ID L_PAREN values R_PAREN
-    { @parser.call_function val[0] }
+    built_in_function_call                            {}
+    | custom_function_call                            {}
+
+  built_in_function_call:
+    WRITE L_PAREN expression R_PAREN                  { @parser.write }
+    | READ L_PAREN R_PAREN                            { @parser.read }
+
+  custom_function_call:
+    call_name
+    L_PAREN
+    call_params                                       { @parser.verify_params }
+    R_PAREN                                           { @parser.call_func }
+
+  call_name:
+    ID                                                { @parser.new_call val[0] }
+
+  call_params:
+    /* empty */                                       {}
+    | expression                                      { @parser.new_call_param }
+    _call_params                                      {}
+
+  _call_params:
+    /* empty */                                       {}
+    | COMMA                                           {}
+    expression                                        { @parser.new_call_param }
+    _call_params                                      {}
 
   return:
-    RETURN expression                                 {}
+    RETURN expression                                 { @parser.func_return }
 
   while:
     WHILE                                             { @parser.loop_condition_start}
@@ -180,7 +207,7 @@ rule
   factor:
     L_PAREN expression R_PAREN                        {}
     | _add_subtract
-     value                                            { @parser.new_operand val[1] }
+     value                                            { @parser.new_operand val[1] unless val[1].nil? }
 
   _add_subtract:
     /* empty */                                       {}
@@ -190,7 +217,7 @@ rule
     constant                                          { result = val[0] }
     | var_value                                       { result = val[0] }
     | array                                           { result = val[0] }
-    | function_call                                   { result = val[0] }
+    | function_call                                   { result = nil }
 
 end
 
@@ -199,6 +226,7 @@ end
   require 'memory/value'
   require 'parser/helper'
   require 'parser/utility'
+  require 'symbols/var'
   $line_number = 0
 
 ---- inner
@@ -213,5 +241,5 @@ end
 
   def on_error(t, val, vstack)
     puts "Símbolo inesperado #{val.inspect} (#{token_to_str(t) || '?'}) "\
-    "en la línea #{$line_number}"
+    "en la línea #{$line_number}."
   end

@@ -1,45 +1,18 @@
 programa prueba {
-    funcion suma(x,y) {
-        var resultado = 1;
-        var d, e, b;
-        d = cierto;
-        e = falso;
-        b = e;
-
-        regresa resultado;
+    funcion resta(x, y) {
+        regresa 1;
     }
-
-    funcion resta {
-        regresa suma();
+    funcion suma(x, y) {
+        var b = 5;
+        resta(1,2);
+        suma(2, y);
+        x = (1+2) * 4 + 5 / (6 + 1);
     }
-
-    funcion arreglo {
-        regresa [];
-    }
-
-    funcion llamada {
-        si(falso) {
-            var x = 0;
-            si(!cierto) {
-                x = 1;
-                si(falso) {
-                    var b = 0;
-                    var y = 1;
-                }
-            }
-        }
-        pero si no {
-            var y = 2;
-        }
-        regresa arreglo();
-    }
-
     funcion origen {
-        regresa 10;
-        var b = 0, a = 10, cat = "abcdefg";
-        mientras(a > 1 && ((a * b) > 5)) {
-            var x = 5 + 7 * 8 + (9 / 10 - 2);
-        }
-        var palabra = "pala" + "bra" + cat;
+        var a = 3;
+        var b = a + 1;
+        escribe(a + " " + b);
+        var f = 3.14;
+        escribe(a + b + f * 2 + 1);
     }
 }
