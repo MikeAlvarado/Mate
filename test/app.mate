@@ -1,18 +1,6 @@
 programa prueba {
-    funcion resta(x, y) {
-        regresa 1;
-    }
-    funcion suma(x, y) {
-        var b = 5;
-        resta(1,2);
-        suma(2, y);
-        x = (1+2) * 4 + 5 / (6 + 1);
-    }
     funcion origen {
-        var a = 3;
-        var b = a + 1;
-        escribe(a + " " + b);
-        var f = 3.14;
-        escribe(a + b + f * 2 + 1);
+        var x = 1 + 2;
+        write(x);
     }
 }

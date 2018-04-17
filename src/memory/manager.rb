@@ -49,16 +49,24 @@ module Memory
       end
     end
 
-    def get(name)
-      @fake_memory[name]
+    def get(var)
+      if var.is_accessing_an_array
+        @fake_memory[var.name].get(var.index)
+      else
+        @fake_memory[var.name]
+      end
     end
 
     def get_temp(position)
       @fake_temp_memory[position - FAKE_TEMP_START]
     end
 
-    def update(name, type)
-      @fake_memory[name].type = type
+    def update(var, type)
+      if(var.is_accessing_an_array)
+        @fake_memory[var.name].update_entry(var.array_index, type)
+      else
+        @fake_memory[var.name].type = type
+      end
     end
   end
 end

@@ -1,7 +1,10 @@
 class Mate
 rule
   program:
-    program_def L_BRACKET functions R_BRACKET {@parser.program_complete val[0]}
+    program_def L_BRACKET functions R_BRACKET
+    {
+      @parser.program_complete val[0]
+    }
 
   program_def:
     PROGRAM ID
@@ -89,7 +92,7 @@ rule
     ID array_access
     {
       result = Symbols::Var.new val[0]
-      result.is_array = val[1]
+      result.is_accessing_an_array = val[1]
     }
 
   array:
@@ -97,11 +100,11 @@ rule
 
   values:
     /* empty */                                       {}
-    | expression _values                              { result = [val[0], val[1]] }
+    | constant _values                                { result = [val[0], val[1]] }
 
   _values:
     /* empty */                                       {}
-    | COMMA expression _values                        { result = [val[1], val[2]] }
+    | COMMA constant _values                          { result = [val[1], val[2]] }
 
   array_access:
     /* empty */                                       { result = false }

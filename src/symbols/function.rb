@@ -7,13 +7,14 @@ require_relative 'var'
 
 module Symbols
   class Function < Base
-    attr_reader :params, :current_scope, :type
-    attr_accessor :initial_instruction
+    attr_reader :params, :current_scope, :type, :local_var_count
+    attr_accessor :initial_instruction, :temp_var_count
     def initialize(name)
       super(name)
       @current_scope = nil
       @params = []
-      @var_count = 0
+      @local_var_count = 0
+      @temp_var_count = 0
       @type = Type.new Types::INVALID
     end
 
@@ -22,6 +23,7 @@ module Symbols
       Validate::symbol_is_not_reserved symbol
       Validate::param_is_not_defined self, symbol
       @params << symbol
+      @local_var_count += 1
     end
 
     def def_scope
@@ -43,17 +45,13 @@ module Symbols
       Validate::param_is_not_defined self, symbol
       Validate::var_is_new self, symbol
       @current_scope.def_var symbol
-      @var_count += 1
+      @local_var_count += 1
       symbol
     end
 
     def del_scope
       Validate::can_delete_scope @current_scope
       @current_scope = @current_scope.parent
-    end
-
-    def size
-      @var_count + @params.length
     end
 
     def params_err(param_count)
@@ -76,7 +74,7 @@ module Symbols
     end
 
     def to_s
-      "***#{@name}***\nPARAMS: #{@params.length}\nVARS: #{@var_count}\nSIZE: #{size}"
+      "***#{@name}***\nPARAMS: #{@params.length}\nLOCAL VAR COUNT: #{@local_var_count}\n"
     end
   end
 end

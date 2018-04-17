@@ -10,7 +10,7 @@ require_relative 'quadruple'
 #'IR' is short for 'Intermediate Representation'
 module IR
   class Quadruples
-    attr_accessor :operators, :operands
+    attr_reader :quadruples
     def initialize
       @operands = []
       @operators = []
@@ -18,23 +18,12 @@ module IR
       @gotos = []
     end
 
-    def access_var_index(memory)
-      index = get_operand memory
-      var = get_operand memory
-      Validate::operand_type var, Types::ARRAY
-      Validate::operand_type operand, Types::INT
-    end
-
     def new_operator(operator)
       @operators.push(operator)
     end
 
     def new_operand(operand)
-      if(operand.is_a?(Symbols::Var))
-        @operands.push(operand.name)
-      else
-        @operands.push(operand)
-      end
+      @operands.push(operand)
     end
 
     def get_operand(memory)
@@ -48,17 +37,18 @@ module IR
       operand = get_operand memory
       operator = @operators.pop
       Validate::operator_type operator, Operators::ASSIGN
-      memory.update var.name, operand.type
-      @quadruples.push Quadruple.new(Instruction.new(operator.id), operand, nil, memory.get(var.name))
+      memory.update var, operand.type
+      @quadruples.push Quadruple.new(Instruction.new(operator.id), operand, nil, memory.get(var))
     end
 
-    def eval_binary_op(memory)
+    def eval_binary_op(memory, current_func)
       right = get_operand memory
       left = get_operand memory
       operator = @operators.pop
       result_type = SemanticCube.resolve(left.type, right.type, operator)
       Validate::operation_type left.type, right.type, operator, result_type
       result = memory.alloc_temp(result_type)
+      current_func.temp_var_count += 1
       @quadruples.push Quadruple.new(Instruction.new(operator.id), left, right, result)
 
       memory.dealloc right if right.is_a? Memory::Entry
@@ -66,10 +56,11 @@ module IR
       new_operand result
     end
 
-    def eval_negation(memory)
+    def eval_negation(memory, current_func)
       operand = get_operand memory
       Validate::operand_type operand, Types::BOOL
       result = memory.alloc_temp(Types::BOOL)
+      current_func.temp_var_count += 1
       @quadruples.push Quadruple.new(Instruction.new(Instructions::NOT), operand, nil, result)
 
       memory.dealloc operand if operand.is_a? Memory::Entry
@@ -102,8 +93,9 @@ module IR
       @quadruples.push Quadruple.new(Instruction.new(Instructions::ERA), nil, nil, func.name)
     end
 
-    def func_call(memory, func)
+    def func_call(memory, func, current_func)
       result = memory.alloc_temp func.type.id
+      current_func.temp_var_count += 1
       call_result = func.type.invalid? ? nil : result
       @quadruples.push Quadruple.new(Instruction.new(Instructions::GOSUB), func.name, func.initial_instruction, call_result)
       new_operand result
@@ -153,8 +145,9 @@ module IR
       @quadruples.push Quadruple.new(Instruction.new(Instructions::EOP), nil, nil, nil)
     end
 
-    def read(memory)
+    def read(memory, current_func)
       result = memory.alloc_temp
+      current_func.temp_var_count += 1
       @quadruples.push Quadruple.new(Instruction.new(Instructions::READ), nil, nil, result)
       new_operand result
     end

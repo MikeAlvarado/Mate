@@ -3,6 +3,7 @@ require 'constants/reserved_words'
 require 'ir/quadruples'
 require 'memory/manager'
 require 'symbols/program'
+require 'virtual_machine/vm'
 require_relative 'function_call'
 
 module Parser
@@ -22,7 +23,7 @@ module Parser
     end
 
     def call_func
-      @ir.func_call @memory, @function_calls.pop.func
+      @ir.func_call @memory, @function_calls.pop.func, @program.current_function
     end
 
     def def_func(name)
@@ -73,11 +74,11 @@ module Parser
     end
 
     def eval_binary_op
-      Utility::execute_safely -> () { @ir.eval_binary_op @memory }
+      Utility::execute_safely -> () { @ir.eval_binary_op @memory, @program.current_function }
     end
 
     def eval_negation
-      Utility::execute_safely -> () { @ir.eval_negation @memory }
+      Utility::execute_safely -> () { @ir.eval_negation @memory, @program.current_function }
     end
 
     def finished_statement_function_call
@@ -119,6 +120,8 @@ module Parser
       @ir.program_end
       puts @ir
       puts "Programa '#{name}' compilado.\n\n"
+      vm = VM::Runner.new @ir.quadruples, @program.functions
+      vm.start
     end
 
     def new_call(name)
@@ -138,7 +141,15 @@ module Parser
       unless operand.nil?
         Utility::execute_safely -> () {
           Validate::var_exists @program.current_function, operand
-        } if operand.is_a?(Symbols::Var)
+          if operand.is_accessing_an_array
+            index = @ir.get_operand @memory
+            array = operand
+            array.is_accessing_an_array = false
+            Validate::operand_type @memory.get(array), Types::ARRAY
+            Validate::operand_type index, Types::INT
+            operand.array_index = index
+          end
+        } if operand.is_a? Symbols::Var
         @ir.new_operand operand
       end
     end
@@ -148,7 +159,7 @@ module Parser
     end
 
     def read
-      @ir.read @memory
+      @ir.read @memory, @program.current_function
     end
 
     def verify_params

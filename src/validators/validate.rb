@@ -33,7 +33,7 @@ module Validate
   end
 
   def operand_type(operand, type)
-    raise MateError.invalid_operand(operand, Type.new(type)) unless operand.type.id == type || operand.type.undefined?
+    raise MateError.invalid_operand_type(operand, Type.new(type)) unless operand.type.id == type || operand.type.undefined?
   end
 
   def operation_type(left, right, operator, result)
