@@ -10,7 +10,8 @@ module Memory
     end
 
     def self.string(value)
-      Value.new value, 0
+      string_val = value.tr '"','' 
+      Value.new "#{string_val}", 0
     end
 
     def self.int(value)

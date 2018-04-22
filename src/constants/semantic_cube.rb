@@ -1,3 +1,4 @@
+require 'byebug'
 require_relative 'types'
 require_relative 'operators'
 
@@ -16,7 +17,7 @@ module SemanticCube
         BOOL      => { }.merge(common(STRING, BOOL)),
         ARRAY     => { }.merge(common(STRING, ARRAY)),
         INVALID   => { }.merge(common(STRING, INVALID)),
-        UNDEFINED => { }.merge(common(STRING, UNDEFINED))
+        UNDEFINED => { ADD   => UNDEFINED }.merge(logic_ops(STRING, UNDEFINED))
       },
       INT => {
         STRING    => { ADD => STRING }.merge(common(INT, STRING)),
@@ -25,7 +26,7 @@ module SemanticCube
         BOOL      => { }.merge(common(INT, BOOL)),
         ARRAY     => { }.merge(common(INT, ARRAY)),
         INVALID   => { }.merge(common(INT, INVALID)),
-        UNDEFINED => { }.merge(common(INT, UNDEFINED))
+        UNDEFINED => { }.merge(logic_ops(INT, UNDEFINED)).merge(arithmetic_ops(UNDEFINED))
       },
       FLOAT => {
         STRING    => { ADD => STRING }.merge(common(FLOAT, STRING)),
@@ -34,7 +35,7 @@ module SemanticCube
         BOOL      => { }.merge(common(FLOAT, BOOL)),
         ARRAY     => { }.merge(common(FLOAT, ARRAY)),
         INVALID   => { }.merge(common(FLOAT, INVALID)),
-        UNDEFINED => { }.merge(common(FLOAT, UNDEFINED))
+        UNDEFINED => { }.merge(logic_ops(FLOAT, UNDEFINED)).merge(arithmetic_ops(UNDEFINED))
       },
       BOOL => {
         STRING    => { }.merge(common(BOOL, STRING)),
@@ -52,7 +53,7 @@ module SemanticCube
         BOOL      => { }.merge(common(ARRAY, BOOL)),
         ARRAY     => { ADD => ARRAY, SUBTRACT => ARRAY }.merge(common(ARRAY, ARRAY)),
         INVALID   => { }.merge(common(ARRAY, INVALID)),
-        UNDEFINED => { }.merge(common(ARRAY, UNDEFINED))
+        UNDEFINED => { ADD => UNDEFINED, SUBTRACT => UNDEFINED }.merge(common(ARRAY, UNDEFINED))
       },
       INVALID => {
         STRING    => { }.merge(common(INVALID, STRING)),
@@ -72,7 +73,7 @@ module SemanticCube
         UNDEFINED => { ADD => UNDEFINED, SUBTRACT => UNDEFINED }.merge(logic_ops(UNDEFINED, UNDEFINED)).merge(arithmetic_ops(UNDEFINED))
       }
     }
-    @cube[left.id][right.id][operator.id] || INVALID
+    @cube[left.type.id][right.type.id][operator.id] || INVALID
   end
 
   def arithmetic_ops(type)

@@ -1,3 +1,4 @@
+require 'constants/limits'
 require 'constants/reserved_words'
 require 'constants/types'
 require 'symbols/base'
@@ -7,9 +8,7 @@ module Validate
   module_function
 
   def can_delete_scope(scope)
-    if scope.nil?
-      raise MateError.new "There's no scope to delete"
-    end
+    raise MateError.new "There's no scope to delete" if scope.nil?
   end
 
   def function_is_new(program, function)

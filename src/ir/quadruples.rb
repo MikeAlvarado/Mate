@@ -45,10 +45,9 @@ module IR
       right = get_operand memory
       left = get_operand memory
       operator = @operators.pop
-      result_type = SemanticCube.resolve(left.type, right.type, operator)
+      result_type = SemanticCube.resolve(left, right, operator)
       Validate::operation_type left.type, right.type, operator, result_type
       result = memory.alloc_temp(result_type)
-      current_func.temp_var_count += 1
       @quadruples.push Quadruple.new(Instruction.new(operator.id), left, right, result)
 
       memory.dealloc right if right.is_a? Memory::Entry
@@ -60,7 +59,6 @@ module IR
       operand = get_operand memory
       Validate::operand_type operand, Types::BOOL
       result = memory.alloc_temp(Types::BOOL)
-      current_func.temp_var_count += 1
       @quadruples.push Quadruple.new(Instruction.new(Instructions::NOT), operand, nil, result)
 
       memory.dealloc operand if operand.is_a? Memory::Entry
@@ -95,7 +93,6 @@ module IR
 
     def func_call(memory, func, current_func)
       result = memory.alloc_temp func.type.id
-      current_func.temp_var_count += 1
       call_result = func.type.invalid? ? nil : result
       @quadruples.push Quadruple.new(Instruction.new(Instructions::GOSUB), func.name, func.initial_instruction, call_result)
       new_operand result
@@ -147,7 +144,6 @@ module IR
 
     def read(memory, current_func)
       result = memory.alloc_temp
-      current_func.temp_var_count += 1
       @quadruples.push Quadruple.new(Instruction.new(Instructions::READ), nil, nil, result)
       new_operand result
     end

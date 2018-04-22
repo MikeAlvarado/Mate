@@ -2,10 +2,10 @@ require 'constants/types'
 require 'validators/validate'
 module Memory
   class Entry
-    attr_reader :position, :inner_entries
+    attr_reader :addr, :inner_entries
     attr_accessor :is_temp, :type
-    def initialize(position, type, is_temp = false)
-      @position = position
+    def initialize(addr, type, is_temp = false)
+      @addr = addr
       @type = Type.new(type)
       @is_temp = is_temp
       @inner_entries = []
@@ -13,7 +13,7 @@ module Memory
 
     def alloc(type)
       Validate::operand_type self, Types::ARRAY
-      entry = Entry.new @position, type
+      entry = Entry.new @addr, type
       @inner_entries << entry
     end
 
@@ -27,9 +27,9 @@ module Memory
 
     def to_s
       if(@inner_entries.empty?)
-        "[#{@type.to_s}, %%#{@position}]"
+        "[#{@type.to_s}, %%#{@addr}]"
       else
-        "[#{@type.to_s}, %%#{@position}, [#{@inner_entries.join(',')}]]"
+        "[#{@type.to_s}, %%#{@addr}, [#{@inner_entries.join(',')}]]"
       end
     end
   end

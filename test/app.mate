@@ -1,6 +1,7 @@
 programa prueba {
     funcion origen {
-        var x = 1 + 2;
-        write(x);
+        escribe("Escribe tu nombre");
+        var nombre = lee();
+        escribe("Hola, " + nombre + "!");
     }
 }
