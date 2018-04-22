@@ -206,6 +206,7 @@ rule
   multiply_divide:
     OP_MULTIPLY                                       { @parser.new_operator Operators::MULTIPLY }
     | OP_DIVIDE                                       { @parser.new_operator Operators::DIVIDE }
+    | OP_MOD                                          { @parser.new_operator Operators::MOD }
 
   factor:
     L_PAREN expression R_PAREN                        {}

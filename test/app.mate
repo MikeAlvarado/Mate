@@ -1,7 +1,15 @@
 programa prueba {
     funcion origen {
-        escribe("Escribe tu nombre");
-        var nombre = lee();
-        escribe("Hola, " + nombre + "!");
+        var x = 0;
+        mientras (x < 10) {
+            escribe(x);
+            si (x % 2 == 0) {
+                escribe("par");
+            }
+            pero si no {
+                escribe("impar");
+            }
+            x = x + 1;
+        }
     }
 }

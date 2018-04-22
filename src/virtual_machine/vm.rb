@@ -30,9 +30,9 @@ module VM
         when Instructions::GOSUB
 
         when Instructions::GOTO
-
+          return instruction.result
         when Instructions::GOTOF
-
+          return instruction.result unless left_operand.value
         when Instructions::EOF
 
         when Instructions::EOP
