@@ -2,34 +2,26 @@ require 'constants/types'
 require 'validators/validate'
 module Memory
   class Entry
-    attr_reader :addr, :inner_entries
+    attr_reader :addr, :is_accessing_an_array, :array_index
     attr_accessor :is_temp, :type
     def initialize(addr, type, is_temp = false)
       @addr = addr
       @type = Type.new(type)
       @is_temp = is_temp
-      @inner_entries = []
+      @array_index = nil
+      @is_accessing_an_array = false
     end
 
-    def alloc(type)
-      Validate::operand_type self, Types::ARRAY
-      entry = Entry.new @addr, type
-      @inner_entries << entry
-    end
-
-    def get(index)
-      @inner_entries[index]
-    end
-
-    def update_entry(index, type)
-      @inner_entries[index].type = type
+    def set_array_access(array_index)
+      @array_index = array_index
+      @is_accessing_an_array = true
     end
 
     def to_s
-      if(@inner_entries.empty?)
-        "[#{@type.to_s}, %%#{@addr}]"
+      if @is_accessing_an_array
+        "#{@type.to_s}, %%#{@addr}-#{@array_index}"
       else
-        "[#{@type.to_s}, %%#{@addr}, [#{@inner_entries.join(',')}]]"
+        "[#{@type.to_s}, %%#{@addr}]"
       end
     end
   end

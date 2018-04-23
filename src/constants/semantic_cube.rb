@@ -14,8 +14,8 @@ module SemanticCube
         STRING    => { ADD   => STRING }.merge(logic_ops(STRING, STRING)),
         INT       => { ADD   => STRING }.merge(common(STRING, INT)),
         FLOAT     => { ADD   => STRING }.merge(common(STRING, FLOAT)),
-        BOOL      => { }.merge(common(STRING, BOOL)),
-        ARRAY     => { }.merge(common(STRING, ARRAY)),
+        BOOL      => { ADD   => STRING }.merge(common(STRING, BOOL)),
+        ARRAY     => { ADD   => STRING }.merge(common(STRING, ARRAY)),
         INVALID   => { }.merge(common(STRING, INVALID)),
         UNDEFINED => { ADD   => UNDEFINED }.merge(logic_ops(STRING, UNDEFINED))
       },
@@ -38,7 +38,7 @@ module SemanticCube
         UNDEFINED => { }.merge(logic_ops(FLOAT, UNDEFINED)).merge(arithmetic_ops(UNDEFINED))
       },
       BOOL => {
-        STRING    => { }.merge(common(BOOL, STRING)),
+        STRING    => { ADD   => STRING }.merge(common(BOOL, STRING)),
         INT       => { }.merge(common(BOOL, INT)),
         FLOAT     => { }.merge(common(BOOL, FLOAT)),
         BOOL      => { }.merge(common(BOOL, BOOL)),
@@ -47,7 +47,7 @@ module SemanticCube
         UNDEFINED => { }.merge(common(BOOL, UNDEFINED))
       },
       ARRAY => {
-        STRING    => { }.merge(common(ARRAY, STRING)),
+        STRING    => { ADD   => STRING }.merge(common(ARRAY, STRING)),
         INT       => { }.merge(common(ARRAY, INT)),
         FLOAT     => { }.merge(common(ARRAY, FLOAT)),
         BOOL      => { }.merge(common(ARRAY, BOOL)),

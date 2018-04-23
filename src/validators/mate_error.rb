@@ -1,3 +1,4 @@
+require 'constants/types'
 class MateError < RuntimeError
   attr_reader :msg
   def initialize(msg)
@@ -18,6 +19,10 @@ class MateError < RuntimeError
 
   def self.invalid_operand_type(operand, type)
     MateError.new "Operando inválido: #{operand}. Se esperaba un tipo #{type}."
+  end
+
+  def self.invalid_operand_types(operand, types)
+    MateError.new "Operando inválido: #{operand}. Se esparaba un tipo [#{types.map{|t| Type.new(t)}.join(', ')}]"
   end
 
   def self.invalid_operand(operand)

@@ -35,30 +35,47 @@ module VM
       case operator.id
         when Instructions::EQUAL
           result_value = @left_operand.value == @right_operand.value
+
         when Instructions::NOT_EQUAL
           result_value = @left_operand.value != @right_operand.value
+
         when Instructions::LESS_EQUAL
           result_value = @left_operand.value <= @right_operand.value
+
         when Instructions::GREATER_EQUAL
           result_value = @left_operand.value >= @right_operand.value
+
         when Instructions::LESS
           result_value = @left_operand.value < @right_operand.value
+
         when Instructions::GREATER
           result_value = @left_operand.value > @right_operand.value
+
         when Instructions::AND
           result_value = @left_operand.value && @right_operand.value
+
         when Instructions::OR
           result_value = @left_operand.value || @right_operand.value
+
         when Instructions::MOD
           result_value = @left_operand.value % @right_operand.value
+
         when Instructions::MULTIPLY
           result_value = @left_operand.value * @right_operand.value
+
         when Instructions::DIVIDE
           result_value = @left_operand.value / @right_operand.value
+
         when Instructions::ADD
-          result_value = @left_operand.value + @right_operand.value
+          if @left_operand.type.string? || @right_operand.type.string?
+            result_value = "#{@left_operand}#{@right_operand}"
+          else
+            result_value = @left_operand.value + @right_operand.value
+          end
+
         when Instructions::SUBTRACT
           result_value = @left_operand.value - @right_operand.value
+
       end
       Memory::Value.new result_value, result_type
     end

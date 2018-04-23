@@ -5,6 +5,10 @@ class MateRuntimeError < RuntimeError
     @function = function
   end
 
+  def self.index_out_of_bounds(function)
+    MateRuntimeError.new 'Índice fuera de los límites', function
+  end
+
   def self.invalid_operand_type(operand, type, function)
     MateRuntimeError.new "Se esperaba un operando del tipo #{type} y se obtuvo uno tipo #{operand.type}", function
   end

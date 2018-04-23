@@ -91,8 +91,7 @@ rule
   var_value:
     ID array_access
     {
-      result = Symbols::Var.new val[0]
-      result.is_accessing_an_array = val[1]
+      result = @parser.handle_var_value val[0], val[1]
     }
 
   array:
@@ -211,11 +210,11 @@ rule
   factor:
     L_PAREN expression R_PAREN                        {}
     | _add_subtract
-     value                                            { @parser.new_operand val[1] unless val[1].nil? }
+     value                                            { @parser.new_operand val[1], val[0] unless val[1].nil? }
 
   _add_subtract:
-    /* empty */                                       {}
-    | add_subtract                                    {}
+    /* empty */                                       { result = false }
+    | add_subtract                                    { result = true }
 
   value:
     constant                                          { result = val[0] }

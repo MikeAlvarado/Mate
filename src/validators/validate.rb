@@ -35,6 +35,10 @@ module Validate
     raise MateError.invalid_operand_type(operand, Type.new(type)) unless operand.type.id == type || operand.type.undefined?
   end
 
+  def operand_types(operand, types)
+    raise MateError.invalid_operand_types(operand, types) unless types.include? operand.type.id || operand.type.undefined?
+  end
+
   def operation_type(left, right, operator, result)
     raise MateError.invalid_operation left, right, operator if result == Types::INVALID
   end

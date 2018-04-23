@@ -1,3 +1,4 @@
+require 'byebug'
 require 'constants/limits'
 require 'constants/types'
 require_relative 'entry'
@@ -51,7 +52,9 @@ module Memory
 
     def get(var)
       if var.is_accessing_an_array
-        @memory[var.name].get(var.index)
+        entry = Entry.new @memory[var.name].addr, Types::UNDEFINED
+        entry.set_array_access var.array_index
+        entry
       else
         @memory[var.name]
       end
@@ -62,8 +65,10 @@ module Memory
     end
 
     def update(var, type)
-      if(var.is_accessing_an_array)
-        @memory[var.name].update_entry(var.array_index, type)
+      if var.is_accessing_an_array
+        entry = Entry.new @memory[var.name].addr, Types::UNDEFINED
+        entry.set_array_access var.array_index
+        entry
       else
         @memory[var.name].type = type
       end

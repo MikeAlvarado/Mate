@@ -1,3 +1,5 @@
+require 'byebug'
+require 'constants/reserved_words'
 require 'constants/types'
 
 module Memory
@@ -7,6 +9,16 @@ module Memory
       @value = value
       @type = Type.new(type) unless is_param
       @is_param = is_param
+    end
+
+    def value_to_s(value)
+      if value == true
+        ReservedWords::TRUE
+      elsif value == false
+        ReservedWords::FALSE
+      else
+        "#{value}"
+      end
     end
 
     def self.string(value)
@@ -35,15 +47,15 @@ module Memory
     end
 
     def to_s
-      str = "#{@type.to_s} "
-      if(@type.array?)
-        str += '[' + @value.first.to_s
+      str = ''
+      if @type.array?
+        str += "[#{value_to_s @value.first}"
         @value.drop(1).each do |val|
-          str += ", #{val.to_s}"
+          str += ", #{value_to_s val.value}"
         end
         str += ']'
       else
-        str += @value.to_s
+        str += value_to_s(@value)
       end
       return str
     end

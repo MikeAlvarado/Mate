@@ -1,15 +1,8 @@
 programa prueba {
     funcion origen {
-        var x = 0;
-        mientras (x < 10) {
-            escribe(x);
-            si (x % 2 == 0) {
-                escribe("par");
-            }
-            pero si no {
-                escribe("impar");
-            }
-            x = x + 1;
-        }
+        var x = [1, 2, 3, 4];
+        escribe(x[-2]);
+        x[-2] = "aloha";
+        escribe(x);
     }
 }

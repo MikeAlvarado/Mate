@@ -11,6 +11,10 @@ module RuntimeValidator
     raise MateRuntimeError.insufficient_memory(function) if local_size > Limits::MAX_FRAME_COUNT
   end
 
+  def index_within_bounds(index, array_size, function)
+    raise MateRuntimeError.index_out_of_bounds(function) if index.abs >= array_size
+  end
+
   def operand_type(operand, type, function)
     raise MateRuntimeError.invalid_operand_type(operand, Type.new(type), function) if operand.type.id != type
   end

@@ -1,3 +1,4 @@
+require 'byebug'
 require 'constants/operators'
 require 'constants/reserved_words'
 require 'ir/quadruples'
@@ -93,6 +94,22 @@ module Parser
       @ir.func_return @memory, @program.current_function
     end
 
+    def handle_var_value(name, is_accessing_an_array)
+      var = Symbols::Var.new name
+      Utility::execute_safely -> () {
+        Validate::var_exists @program.current_function, var
+        if is_accessing_an_array
+          index = @ir.get_operand @memory
+          array = var.dup
+          Validate::operand_type @memory.get(array), Types::ARRAY
+          Validate::operand_type index, Types::INT
+          var.array_index = index
+          var.is_accessing_an_array = true
+        end
+      }
+      var
+    end
+
     def if_condition
       Utility::execute_safely -> () { @ir.if_condition @memory }
     end
@@ -137,19 +154,18 @@ module Parser
       @function_calls.last.increase_param_counter
     end
 
-    def new_operand(operand)
+    def new_operand(operand, has_sign = false)
       unless operand.nil?
         Utility::execute_safely -> () {
-          Validate::var_exists @program.current_function, operand
-          if operand.is_accessing_an_array
-            index = @ir.get_operand @memory
-            array = operand
-            array.is_accessing_an_array = false
-            Validate::operand_type @memory.get(array), Types::ARRAY
-            Validate::operand_type index, Types::INT
-            operand.array_index = index
+          Validate::var_exists(@program.current_function, operand) if operand.is_a? Symbols::Var
+          if has_sign
+            sign = @ir.get_operator
+            Validate::operand_types operand, [Types::INT, Types::FLOAT]
+            if sign.subtract?
+              operand.value = -operand.value
+            end
           end
-        } if operand.is_a? Symbols::Var
+        }
         @ir.new_operand operand
       end
     end

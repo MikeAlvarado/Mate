@@ -1,3 +1,4 @@
+require 'byebug'
 require 'constants/reserved_words'
 require 'constants/semantic_cube'
 require 'constants/types'
@@ -33,9 +34,13 @@ module IR
       memory.get op
     end
 
+    def get_operator
+      @operators.pop
+    end
+
     def assign_var(var, memory)
       operand = get_operand memory
-      operator = @operators.pop
+      operator = get_operator
       Validate::operator_type operator, Operators::ASSIGN
       memory.update var, operand.type
       @quadruples.push Quadruple.new(Instruction.new(operator.id), operand, nil, memory.get(var))
@@ -44,7 +49,7 @@ module IR
     def eval_binary_op(memory, current_func)
       right = get_operand memory
       left = get_operand memory
-      operator = @operators.pop
+      operator = get_operator
       result_type = SemanticCube.resolve(left, right, operator)
       Validate::operation_type left.type, right.type, operator, result_type
       result = memory.alloc_temp(result_type)

@@ -46,7 +46,7 @@ module VM
         when Instructions::SOF
 
         when Instructions::WRITE
-          puts left_operand.value
+          puts left_operand
         else
           operation = OperationHandler.new left_operand, right_operand, instruction.result
           operation.execute_operation instruction.operator, @memory
