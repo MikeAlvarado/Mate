@@ -1,16 +1,16 @@
+require 'byebug'
 require 'constants/reserved_words'
 require 'validators/mate_error'
 require 'validators/validate'
-require_relative 'base'
 require_relative 'scope'
 require_relative 'var'
 
 module Symbols
-  class Function < Base
-    attr_reader :params, :current_scope, :type, :var_count
+  class Function
+    attr_reader :name, :params, :current_scope, :type, :var_count
     attr_accessor :initial_instruction
     def initialize(name)
-      super(name)
+      @name = name
       @current_scope = nil
       @params = []
       @var_count = 0
@@ -18,31 +18,28 @@ module Symbols
     end
 
     def def_param(name)
-      symbol = Symbols::Var.new name, true
+      symbol = Symbols::Var.new name
       Validate::symbol_is_not_reserved symbol
       Validate::param_is_not_defined self, symbol
       @params << symbol
       @var_count += 1
+      symbol
     end
 
     def def_scope
       @current_scope = Scope.new @current_scope
-      @current_scope.def_params @params
+      @current_scope.def_params @params if @current_scope.parent.nil?
     end
 
-    def def_type(type)
-      if @type.invalid? || @type.id == type
-        @type = Type.new type
-      else
-        @type = Type.new Types::UNDEFINED
-      end
+    def def_type
+      @type = Type.new Types::UNDEFINED
     end
 
     def def_var(name)
       symbol = Symbols::Var.new name
-      Validate::symbol_is_not_reserved symbol
-      Validate::param_is_not_defined self, symbol
-      Validate::var_is_new self, symbol
+      Validate::symbol_is_not_reserved name
+      Validate::param_is_not_defined self, name
+      Validate::var_is_new self, name
       @current_scope.def_var symbol
       @var_count += 1
       symbol

@@ -1,12 +1,11 @@
 require 'validators/mate_error'
-require_relative 'base'
 require_relative 'function'
 
 module Symbols
-  class Program < Base
-    attr_reader :functions, :current_function
+  class Program
+    attr_reader :name, :functions, :current_function
     def initialize(name)
-      super(name)
+      @name = name
       @current_function = nil
       @functions = Hash.new
     end

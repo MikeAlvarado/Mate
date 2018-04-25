@@ -1,17 +1,20 @@
 require 'constants/operators'
 module Instructions
   include Operators
-  GOSUB         = 15
-  GOTO          = 16
-  GOTOF         = 17
-  EOF           = 18 # End of function
-  EOP           = 19 # End of program
-  ERA           = 20 # Activation record expansion
-  PARAM         = 21
-  READ          = 22
-  RETURN        = 23
-  SOF           = 24
-  WRITE         = 25
+  READ          = 15
+  WRITE         = 16
+  GOSUB         = 17
+  GOTO          = 18
+  GOTOF         = 19
+  EOF           = 20 # End of function
+  EOP           = 21 # End of program
+  ERA           = 22 # Activation record expansion
+  PARAM         = 23
+  RETURN        = 24
+  SOF           = 25
+
+  BINARY_OPERATIONS = (0..12)
+  UNARY_OPERATIONS = (13..16)
 end
 
 class Instruction

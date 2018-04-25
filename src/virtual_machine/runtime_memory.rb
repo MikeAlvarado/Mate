@@ -1,22 +1,13 @@
 require 'byebug'
-require 'constants/limits'
 require 'validators/runtime_validator'
-require_relative 'utility'
+require_relative 'frame'
 
 module VM
   class RuntimeMemory
     def initialize(origin)
-      @current_frame = Frame.new origin
-      @frame_stack = [@current_frame]
+      @frame_stack = [Frame.new(origin)]
+      @call_stack = []
       @var_count = 0
-    end
-
-    def set_value(var_metadata, var_value)
-      unless(var_metadata.is_temp)
-        @var_count += 1
-        RuntimeValidator::var_memory_available @var_count, @current_frame.name
-      end
-      @current_frame.set_value var_metadata, var_value, self
     end
 
     def current_frame_name
@@ -29,57 +20,45 @@ module VM
       var_value
     end
 
+    def end_frame
+      @frame_stack.pop
+      @current_frame = @frame_stack.last
+      return @call_stack.pop unless @frame_stack.empty?
+    end
+
+    def new_frame(function)
+      push function
+    end
+
     def push(function)
-      RuntimeValidator::frame_memory_available
+      RuntimeValidator::frame_memory_available @frame_stack.length, @current_frame.name
       @frame_stack << Frame.new(function)
     end
 
-    def pop
-      @frame_stack.pop
-    end
-  end
-
-  # todo: eliminate vars after each scope
-  class Frame
-    attr_reader :name
-    def initialize(function)
-      @size = function.var_count
-      @name = function.name
-      @local = []
-      @temp = []
+    def set_param(param_number, var_value)
+      @frame_stack.last.set_param param_number, var_value, self
     end
 
-    def set_value(var_metadata, var_value, memory)
-      if var_metadata.is_temp
-        if var_metadata.is_accessing_an_array
-          index = Utility::get_value var_metadata.array_index, memory
-          @temp[var_metadata.addr - Limits::TEMP_START_ADDR].value[index.value] = var_value
-        else
-          @temp[var_metadata.addr - Limits::TEMP_START_ADDR] = var_value
-        end
-      else
-        if var_metadata.is_accessing_an_array
-          index = Utility::get_value var_metadata.array_index, memory
-          @local[var_metadata.addr - Limits::LOCAL_START_ADDR].value[index.value] = var_value
-        else
-          @local[var_metadata.addr - Limits::LOCAL_START_ADDR] = var_value
-        end
+    def set_value(var_metadata, var_value)
+      unless var_metadata.is_temp
+        @var_count += 1
+        RuntimeValidator::var_memory_available @var_count, @current_frame.name
       end
+      @current_frame.set_value var_metadata, var_value, self
     end
 
-    def get_value(var_metadata, memory)
-      if var_metadata.is_temp
-        value = @temp[var_metadata.addr - Limits::TEMP_START_ADDR]
-      else
-        value = @local[var_metadata.addr - Limits::LOCAL_START_ADDR]
-      end
-      if var_metadata.is_accessing_an_array
-        index = Utility::get_value var_metadata.array_index, memory
-        RuntimeValidator::index_within_bounds index.value, value.value.length, @name
-        value.value[index.value]
-      else
-        value
-      end
+    def set_return_addr(return_metadata, instruction_number)
+      @call_stack << instruction_number + 1
+      @current_frame.push_pending return_metadata
+    end
+
+    def set_return(return_value)
+      return_metadata = @frame_stack[-2].pop_pending
+      @frame_stack[-2].set_value return_metadata, return_value, self
+    end
+
+    def start_frame
+      @current_frame = @frame_stack.last
     end
   end
 end

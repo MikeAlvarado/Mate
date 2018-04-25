@@ -1,9 +1,10 @@
+require 'byebug'
 require 'constants/reserved_words'
 require 'symbols/var'
 require 'validators/validate'
 
 class Scope
-  attr_reader :parent
+  attr_reader :parent, :vars
 
   def initialize(parent = nil)
     @parent = parent
@@ -21,10 +22,10 @@ class Scope
     }
   end
 
-  def var?(symbol)
-    return true if @vars.key?(symbol.name)
+  def var?(name)
+    return true if @vars.key?(name)
     return false if @parent == nil
-    @parent.var? symbol
+    @parent.var? name
   end
 
   def to_s

@@ -19,8 +19,8 @@ module Validate
     raise Symbols::Function.undefined_err program.name, name unless program.functions.key? name
   end
 
-  def param_is_not_defined(function, var)
-    raise var.duplicate_err(function.name) if function.params.include? var.name
+  def param_is_not_defined(function, name)
+    raise Symbols::Var.duplicate_err(function.name, name) if function.params.include? name
   end
 
   def params_match(function, param_count)
@@ -47,15 +47,15 @@ module Validate
     raise MateError.invalid_operator operator unless operator.id == type
   end
 
-  def symbol_is_not_reserved(symbol)
-    raise MateError.reserved_word symbol.name if ReservedWords::include? symbol.name
+  def symbol_is_not_reserved(name)
+    raise MateError.reserved_word name if ReservedWords::include? name
   end
 
-  def var_exists(function, var = Symbols::Var.new('undefined'))
-    raise var.undefined_err function.name unless function.current_scope.var? var
+  def var_exists(function, name)
+    raise Symbols::Var.undefined_err function.name, name unless function.current_scope.var? name
   end
 
-  def var_is_new(function, var = Symbols::Var.new('undefined'))
-    raise var.duplicate_err function.name if function.current_scope.var? var
+  def var_is_new(function, name)
+    raise Symbols::Var.duplicate_err function.name, name if function.current_scope.var? name
   end
 end

@@ -7,12 +7,12 @@ module Operators
   GREATER       = 5
   AND           = 6
   OR            = 7
-  NOT           = 8
-  MOD           = 9
-  MULTIPLY      = 10
-  DIVIDE        = 11
-  ADD           = 12
-  SUBTRACT      = 13
+  MOD           = 8
+  MULTIPLY      = 9
+  DIVIDE        = 10
+  ADD           = 11
+  SUBTRACT      = 12
+  NOT           = 13
   ASSIGN        = 14
 end
 

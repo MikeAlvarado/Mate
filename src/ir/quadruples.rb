@@ -1,12 +1,10 @@
 require 'byebug'
-require 'constants/reserved_words'
-require 'constants/semantic_cube'
-require 'constants/types'
 require 'memory/entry'
 require 'memory/value'
 require 'validators/validate'
 require_relative 'instructions'
 require_relative 'quadruple'
+require_relative 'var_access'
 
 #'IR' is short for 'Intermediate Representation'
 module IR
@@ -24,56 +22,69 @@ module IR
     end
 
     def new_operand(operand)
-      @operands.push(operand)
+      @operands.push(operand) unless operand.nil?
     end
 
     def get_operand(memory)
       op = @operands.pop
-      Validate::operand_is_valid op if op.is_a? Memory::Entry
-      return op if op.is_a?(Memory::Value) || op.is_a?(Memory::Entry)
-      memory.get op
+      if op.is_a?(Memory::Value) || op.is_a?(VarAccess)
+        op
+      elsif op.is_a? Memory::Entry
+        VarAccess.new addr: op.addr, is_temp: op.is_temp
+      else
+        entry = memory.get op[:name]
+        VarAccess.new addr: entry.addr, index: op[:index]
+      end
     end
 
     def get_operator
       @operators.pop
     end
 
-    def assign_var(var, memory)
+    def assign_var(name, index, memory)
       operand = get_operand memory
       operator = get_operator
       Validate::operator_type operator, Operators::ASSIGN
-      memory.update var, operand.type
-      @quadruples.push Quadruple.new(Instruction.new(operator.id), operand, nil, memory.get(var))
+      addr = memory.get(name).addr
+      save_operation(
+        operator.id,
+        operand,
+        nil,
+        {addr: addr, index: index},
+        memory)
     end
 
     def eval_binary_op(memory, current_func)
       right = get_operand memory
       left = get_operand memory
       operator = get_operator
-      result_type = SemanticCube.resolve(left, right, operator)
-      Validate::operation_type left.type, right.type, operator, result_type
-      result = memory.alloc_temp(result_type)
-      @quadruples.push Quadruple.new(Instruction.new(operator.id), left, right, result)
-
-      memory.dealloc right if right.is_a? Memory::Entry
-      memory.dealloc left if left.is_a? Memory::Entry
+      result = memory.alloc_temp
+      save_operation(
+        operator.id,
+        left,
+        right,
+        { addr: result.addr, is_temp: result.is_temp },
+        memory)
       new_operand result
     end
 
     def eval_negation(memory, current_func)
       operand = get_operand memory
-      Validate::operand_type operand, Types::BOOL
-      result = memory.alloc_temp(Types::BOOL)
-      @quadruples.push Quadruple.new(Instruction.new(Instructions::NOT), operand, nil, result)
-
-      memory.dealloc operand if operand.is_a? Memory::Entry
+      result = memory.alloc_temp
+      save_operation(
+        Instructions::NOT,
+        operand,
+        nil,
+        {addr: result.addr, is_temp: result.is_temp},
+        memory)
       new_operand result
     end
 
     def if_condition(memory)
       operand = get_operand memory
-      Validate::operand_type operand, Types::BOOL
       @quadruples.push Quadruple.new(Instruction.new(Instructions::GOTOF), operand, nil, nil)
+
+      memory.dealloc_temp operand if operand.is_a? Memory::Entry
       @gotos << @quadruples.length - 1
     end
 
@@ -97,21 +108,29 @@ module IR
     end
 
     def func_call(memory, func, current_func)
-      result = memory.alloc_temp func.type.id
-      call_result = func.type.invalid? ? nil : result
-      @quadruples.push Quadruple.new(Instruction.new(Instructions::GOSUB), func.name, func.initial_instruction, call_result)
-      new_operand result
+      call_result = func.type.invalid? ? nil : memory.alloc_temp
+      save_operation(
+        Instructions::GOSUB,
+        func.name,
+        func.initial_instruction,
+        { addr: call_result.addr, is_temp: call_result.is_temp },
+        memory
+      )
+      new_operand call_result
     end
 
     def func_return(memory, func)
       operand = get_operand memory
-      Validate::operand_is_valid operand
-      func.def_type operand.type.id
+      func.def_type
       @quadruples.push Quadruple.new(Instruction.new(Instructions::RETURN), nil, nil, operand)
     end
 
     def func_start(func)
       @quadruples.push Quadruple.new(Instruction.new(Instructions::SOF), nil, nil, func.name)
+    end
+
+    def get_instruction_number
+      @quadruples.length - 1
     end
 
     def if_end
@@ -125,7 +144,6 @@ module IR
 
     def loop_condition_end(memory)
       operand = get_operand memory
-      Validate::operand_type operand, Types::BOOL
       @quadruples.push Quadruple.new(Instruction.new(Instructions::GOTOF), operand, nil, nil)
       @gotos << @quadruples.length - 1
     end
@@ -140,7 +158,12 @@ module IR
 
     def param(memory, function_call)
       operand = get_operand memory
-      @quadruples.push Quadruple.new(Instruction.new(Instructions::PARAM), operand, nil, function_call.current_param)
+      save_operation(
+        Instructions::PARAM,
+        function_call.current_param,
+        nil,
+        { addr: operand.addr, index: operand.index, is_temp: operand.is_temp},
+        memory)
     end
 
     def program_end
@@ -149,23 +172,41 @@ module IR
 
     def read(memory, current_func)
       result = memory.alloc_temp
-      @quadruples.push Quadruple.new(Instruction.new(Instructions::READ), nil, nil, result)
+      save_operation(
+        Instructions::READ,
+        nil,
+        nil,
+        { addr: result.addr, is_temp: result.is_temp },
+        memory
+      )
       new_operand result
+    end
+
+    def save_operation(operator, left, right, result, memory)
+      result_access = VarAccess.new(result) unless result.nil?
+      @quadruples.push Quadruple.new(
+        Instruction.new(operator),
+        left,
+        right,
+        result_access)
+      memory.dealloc_temp right if right.is_a? VarAccess
+      memory.dealloc_temp left if left.is_a? VarAccess
     end
 
     def write(memory)
       operand = get_operand memory
-      @quadruples.push Quadruple.new(Instruction.new(Instructions::WRITE), operand, nil, nil)
+      save_operation(
+        Instructions::WRITE,
+        operand,
+        nil,
+        nil,
+        memory)
     end
 
     def to_s
       s = ''
       @quadruples.each_with_index { |q, index| s += "#{index}.\t#{q}\n" }
       s
-    end
-
-    def get_instruction_number
-      @quadruples.length - 1
     end
 
     private

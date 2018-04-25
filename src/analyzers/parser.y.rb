@@ -21,7 +21,10 @@ rule
     | function _functions                             {}
 
   function:
-    FUNCTION _function params block                   { @parser.func_end }
+    FUNCTION _function params block
+    {
+      @parser.func_end
+    }
 
   _function:
     ORIGIN                                            { @parser.def_origin }
@@ -38,7 +41,8 @@ rule
 
   more_params:
   /* empty */                                         {}
-  | COMMA ID _params                                  { @parser.def_param val[1] }
+  | COMMA ID more_params
+  { @parser.def_param val[1] }
 
   block:
     L_BRACKET                                         { @parser.def_scope }

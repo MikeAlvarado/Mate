@@ -1,8 +1,39 @@
 programa prueba {
+    funcion multiplica(x) {
+        var resultado = 1;
+        var cuenta = 0;
+        mientras(cuenta < 3) {
+            resultado = resultado * x[cuenta];
+            cuenta = cuenta + 1;
+        }
+        regresa resultado;
+    }
+    funcion resta(x) {
+        var resultado = x[0];
+        var cuenta = 0;
+        mientras(cuenta < 2) {
+            cuenta = cuenta + 1;
+            resultado = resultado - x[cuenta];
+        }
+        regresa resultado;
+    }
+    funcion suma(x) {
+        var resultado = 0;
+        var cuenta = 0;
+        mientras(cuenta < 3) {
+            resultado = resultado + x[cuenta];
+            cuenta = cuenta + 1;
+        }
+        regresa resultado;
+    }
     funcion origen {
-        var x = [1, 2, 3, 4];
-        escribe(x[-2]);
-        x[-2] = "aloha";
-        escribe(x);
+        var x = [];
+        escribe("Escribe tres numeros");
+        x[0] = lee();
+        x[1] = lee();
+        x[2] = lee();
+        escribe(suma(x));
+        escribe(resta(x));
+        escribe(multiplica(x));
     }
 }

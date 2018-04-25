@@ -4,11 +4,10 @@ require 'constants/types'
 
 module Memory
   class Value
-    attr_accessor :value, :type, :is_param
-    def initialize(value, type, is_param = false)
+    attr_accessor :value, :type
+    def initialize(value, type)
       @value = value
-      @type = Type.new(type) unless is_param
-      @is_param = is_param
+      @type = Type.new(type)
     end
 
     def value_to_s(value)

@@ -16,10 +16,10 @@ module Parser
       @program = nil
     end
 
-    def ass_var(var)
+    def ass_var(name:, index: nil)
       Utility::execute_safely -> () {
-        Validate::var_exists @program.current_function, var
-        @ir.assign_var var, @memory
+        Validate::var_exists @program.current_function, name
+        @ir.assign_var name, index, @memory
       }
     end
 
@@ -41,8 +41,8 @@ module Parser
 
     def def_param(name)
       Utility::execute_safely -> () {
-        @program.def_param name
-        @memory.alloc name
+        param_entry = @program.def_param name
+        @memory.alloc param_entry
       }
     end
 
@@ -61,12 +61,17 @@ module Parser
     def def_var(name, assigning)
       Utility::execute_safely -> () {
         new_var = @program.def_var name
-        @memory.alloc name
-        ass_var new_var if assigning
+        @memory.alloc new_var
+        ass_var({ name: name }) if assigning
       }
     end
 
     def del_scope
+      scope_vars = @program.current_function.current_scope.vars
+      scope_vars.each_value {
+        |var_value|
+        @memory.dealloc var_value
+      }
       @program.del_scope
     end
 
@@ -95,19 +100,12 @@ module Parser
     end
 
     def handle_var_value(name, is_accessing_an_array)
-      var = Symbols::Var.new name
+      index = nil
       Utility::execute_safely -> () {
-        Validate::var_exists @program.current_function, var
-        if is_accessing_an_array
-          index = @ir.get_operand @memory
-          array = var.dup
-          Validate::operand_type @memory.get(array), Types::ARRAY
-          Validate::operand_type index, Types::INT
-          var.array_index = index
-          var.is_accessing_an_array = true
-        end
+        Validate::var_exists @program.current_function, name
+        index = @ir.get_operand @memory if is_accessing_an_array
       }
-      var
+      { name: name, index: index }
     end
 
     def if_condition
@@ -160,7 +158,6 @@ module Parser
           Validate::var_exists(@program.current_function, operand) if operand.is_a? Symbols::Var
           if has_sign
             sign = @ir.get_operator
-            Validate::operand_types operand, [Types::INT, Types::FLOAT]
             if sign.subtract?
               operand.value = -operand.value
             end
