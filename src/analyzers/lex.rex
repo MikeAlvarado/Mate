@@ -5,7 +5,7 @@ macro
   BLANK     [\ \t\n]
 rule
   {BLANK}
-  [a-zA-Z][a-zA-Z0-9]*   { $line_number = lineno; 
+  [a-zA-Z\_][\_a-zA-Z0-9]*   { $line_number = lineno; 
                           if text == "programa" then return     [:PROGRAM,  text]
                           elsif text == "funcion" then return   [:FUNCTION, text]
                           elsif text == "origen" then return    [:ORIGIN,   text]

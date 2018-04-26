@@ -82,15 +82,21 @@ module IR
 
     def if_condition(memory)
       operand = get_operand memory
-      @quadruples.push Quadruple.new(Instruction.new(Instructions::GOTOF), operand, nil, nil)
-
+      @quadruples.push Quadruple.new(
+        Instruction.new(Instructions::GOTOF),
+        operand,
+        nil,
+        nil)
       @gotos << @quadruples.length - 1
+      memory.dealloc_temp operand if operand.is_a? VarAccess
     end
 
     def else_start
-      @quadruples.push Quadruple.new(Instruction.new(Instructions::GOTO), nil, nil, nil)
+      @quadruples.push Quadruple.new(
+        Instruction.new(Instructions::GOTO),
+        nil, nil, nil)
       pending_goto = @gotos.pop
-      @quadruples[pending_goto].result = @quadruples.length
+      @quadruples[pending_goto].right_operand = @quadruples.length
       @gotos << @quadruples.length - 1
     end
 
@@ -99,20 +105,30 @@ module IR
     end
 
     def func_end(func)
-      @quadruples.push Quadruple.new(Instruction.new(Instructions::EOF), nil, nil, func.name)
+      @quadruples.push Quadruple.new(
+        Instruction.new(Instructions::EOF),
+        func.name, nil, nil)
     end
 
     def func_prep(func)
-      @quadruples.push Quadruple.new(Instruction.new(Instructions::ERA), nil, nil, func.name)
+      @quadruples.push Quadruple.new(
+        Instruction.new(Instructions::ERA),
+        func.name, nil, nil)
     end
 
     def func_call(memory, func, current_func)
-      call_result = func.type.invalid? ? nil : memory.alloc_temp
+      unless func.type.invalid?
+        call_result = memory.alloc_temp
+        call_result_access = {
+          addr: call_result.addr,
+          is_temp: call_result.is_temp
+        }
+      end
       save_operation(
         Instructions::GOSUB,
         func.name,
         func.initial_instruction,
-        { addr: call_result.addr, is_temp: call_result.is_temp },
+        call_result_access,
         memory
       )
       new_operand call_result
@@ -121,11 +137,16 @@ module IR
     def func_return(memory, func)
       operand = get_operand memory
       func.def_type
-      @quadruples.push Quadruple.new(Instruction.new(Instructions::RETURN), nil, nil, operand)
+      @quadruples.push Quadruple.new(
+        Instruction.new(Instructions::RETURN),
+        operand, nil, nil)
+      memory.dealloc_temp operand if operand.is_a? VarAccess
     end
 
     def func_start(func)
-      @quadruples.push Quadruple.new(Instruction.new(Instructions::SOF), nil, nil, func.name)
+      @quadruples.push Quadruple.new(
+        Instruction.new(Instructions::SOF),
+        func.name, nil, nil)
     end
 
     def get_instruction_number
@@ -134,7 +155,7 @@ module IR
 
     def if_end
       pending_goto = @gotos.pop
-      @quadruples[pending_goto].result = @quadruples.length
+      @quadruples[pending_goto].right_operand = @quadruples.length
     end
 
     def loop_condition_start
@@ -143,30 +164,35 @@ module IR
 
     def loop_condition_end(memory)
       operand = get_operand memory
-      @quadruples.push Quadruple.new(Instruction.new(Instructions::GOTOF), operand, nil, nil)
+      @quadruples.push Quadruple.new(
+        Instruction.new(Instructions::GOTOF),
+        operand, nil, nil)
       @gotos << @quadruples.length - 1
+      memory.dealloc_temp operand if operand.is_a? VarAccess
     end
 
     def loop_end
-      @quadruples.push Quadruple.new(Instruction.new(Instructions::GOTO), nil, nil, nil)
+      @quadruples.push Quadruple.new(
+        Instruction.new(Instructions::GOTO),
+        nil, nil, nil)
       pending_goto = @gotos.pop
-      @quadruples[pending_goto].result = @quadruples.length
+      @quadruples[pending_goto].right_operand = @quadruples.length
       pending_goto = @gotos.pop
-      @quadruples[@quadruples.length - 1].result = pending_goto
+      @quadruples[@quadruples.length - 1].right_operand = pending_goto
     end
 
     def param(memory, function_call)
       operand = get_operand memory
-      save_operation(
-        Instructions::PARAM,
-        function_call.current_param,
-        nil,
-        { addr: operand.addr, index: operand.index, is_temp: operand.is_temp},
-        memory)
+      @quadruples.push Quadruple.new(
+        Instruction.new(Instructions::PARAM),
+        function_call.current_param, operand, nil)
+      memory.dealloc_temp operand if operand.is_a? VarAccess
     end
 
     def program_end
-      @quadruples.push Quadruple.new(Instruction.new(Instructions::EOP), nil, nil, nil)
+      @quadruples.push Quadruple.new(
+        Instruction.new(Instructions::EOP),
+        nil, nil, nil)
     end
 
     def read(memory, current_func)

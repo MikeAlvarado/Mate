@@ -30,6 +30,6 @@ task :clean do
 end
 
 desc "Running test"
-task :test => :generate do
-  exec "ruby", "-I", "./build", "test/test.rb"
+task :test, [:file_name, :debug] => :generate do |t, args|
+  exec "ruby", "-I", "./build", "test/test.rb", "#{args[:file_name]}", "#{args[:debug]}"
 end

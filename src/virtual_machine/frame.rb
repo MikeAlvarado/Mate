@@ -7,12 +7,13 @@ require_relative 'utility'
 module VM
 # todo: eliminate vars after each scope
   class Frame
-    attr_reader :name
-    def initialize(function)
+    attr_reader :name, :dispatcher
+    attr_accessor :pending_return, :return_to
+    def initialize(function, dispatcher = nil)
+      @dispatcher = dispatcher
       @size = function.var_count
       @name = function.name
       @params = function.params
-      @pending = []
       @local = []
       @temp = []
     end
@@ -31,17 +32,9 @@ module VM
       end
     end
 
-    def push_pending(var_metadata)
-      @pending << var_metadata
-    end
-
     def set_param(param_number, param_value, memory)
       param_metadata = @params[param_number]
       @local[param_metadata.addr - Limits::LOCAL_START_ADDR] = param_value
-    end
-
-    def pop_pending
-      @pending.pop
     end
 
     def set_value(var_metadata, var_value, memory)

@@ -1,3 +1,8 @@
 require 'analyzers/parserino'
-sourceCode = Mate.new
-sourceCode.parse('test/app.mate')
+
+arguments = ARGV
+file = arguments[0]
+debug = arguments[1]
+
+sourceCode = Mate.new debug
+sourceCode.parse arguments.first

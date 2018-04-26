@@ -1,4 +1,4 @@
-programa prueba {
+programa Aritmetica {
     funcion multiplica(x) {
         var resultado = 1;
         var cuenta = 0;

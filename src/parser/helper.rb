@@ -133,8 +133,10 @@ module Parser
         Validate::function_exists @program, ReservedWords::ORIGIN
       }
       @ir.program_end
-      puts @ir
-      puts "Programa '#{name}' compilado.\n\n"
+      if $debug
+        puts @ir
+        puts "Programa '#{name}' compilado.\n\n"
+      end
       vm = VM::Runner.new @ir.quadruples, @program.functions
       vm.start
     end

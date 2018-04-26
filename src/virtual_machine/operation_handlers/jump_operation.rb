@@ -7,22 +7,21 @@ module VM
   class JumpOperation < OperationHandler
     def execute(operator, current_instruction, memory)
       if operator.gosub?
-        memory.set_return_addr @result_metadata, current_instruction
+        memory.set_return_metadata @result_metadata, current_instruction
         @right_operand
 
       elsif operator.goto?
-        @result_metadata
+        @right_operand
 
       elsif operator.gotof?
         RuntimeValidator::operand_type(
           @left_operand, Types::BOOL,
           memory.current_frame_name
         )
-
         if @left_operand.value
           current_instruction + 1
         else
-          @result_metadata
+          @right_operand
         end
 
       elsif operator.eof?

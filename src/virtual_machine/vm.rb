@@ -31,40 +31,33 @@ module VM
 
     def run(instruction)
       operator = instruction.operator
-      left_operand = instruction.left_operand
-      right_operand = instruction.right_operand
+      left_value = get_value instruction.left_operand, @memory
+      right_value = get_value instruction.right_operand, @memory
       result_operand = instruction.result
 
       if operator.binary_operation?
-        left_value = get_value left_operand, @memory
-        right_value = get_value right_operand, @memory
         operation = BinaryOperation.new left_value, right_value, result_operand
         operation.execute operator, @memory
 
       elsif operator.jump_operation?
-        left_value = get_value left_operand, @memory
-        right_value = get_value right_operand, @memory
         operation = JumpOperation.new left_value, right_value, result_operand
         return operation.execute operator, @current_instruction, @memory
 
       elsif operator.unary_operation?
-        left_value = get_value left_operand, @memory
         operation = UnaryOperation.new left_value, nil, result_operand
         operation.execute operator, @memory
 
       elsif operator.era?
-        @memory.new_frame @functions[result_operand]
+        @memory.new_frame @functions[left_value]
 
       elsif operator.param?
-        result_value = Utility::get_value result_operand, @memory
-        @memory.set_param left_operand, result_value
+        @memory.set_param left_value, right_value
 
       elsif operator.sof?
         @memory.start_frame
 
       elsif operator.return?
-        result_value = Utility::get_value result_operand, @memory
-        @memory.set_return result_value
+        @memory.set_return left_value
       end
 
       @current_instruction + 1

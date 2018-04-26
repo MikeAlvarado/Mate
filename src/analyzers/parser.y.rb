@@ -238,10 +238,11 @@ end
 
 ---- inner
 
-  def initialize()
+  def initialize(debug)
+    $debug = debug.to_i == 1
     @parser = Parser::Helper.new
   end
-  
+
   def parse(input)
     scan_file(input)
   end

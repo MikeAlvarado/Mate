@@ -2,7 +2,6 @@ require 'byebug'
 require 'constants/reserved_words'
 require 'constants/types'
 require 'memory/value'
-require 'parser/current'
 require 'validators/runtime_validator'
 require_relative 'base'
 
@@ -43,7 +42,7 @@ module VM
     end
 
     def _read
-      input = gets.chomp
+      input = STDIN.gets.chomp
       begin
         parse_input(input)
       rescue => msg

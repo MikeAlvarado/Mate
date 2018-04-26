@@ -1,0 +1,14 @@
+programa Recursion {
+  funcion fibonacci(iteracion) {
+    si(iteracion <= 0) {
+      regresa 0;
+    }
+    si(iteracion == 1) {
+      regresa 1;
+    }
+    regresa fibonacci(iteracion-1) + fibonacci(iteracion-2);
+  }
+  funcion origen {
+    escribe(fibonacci(5));
+  }
+}
