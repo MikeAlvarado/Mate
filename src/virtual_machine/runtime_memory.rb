@@ -1,4 +1,5 @@
 require 'byebug'
+require 'constants/limits'
 require 'validators/runtime_validator'
 require_relative 'frame'
 
@@ -13,9 +14,9 @@ module VM
       @current_frame.name
     end
 
-    def get_value(var_metadata)
-      var_value = @current_frame.get_value var_metadata, self
-      RuntimeValidator::var_exists var_metadata, @current_frame.name
+    def get_value(var_metadata, line_number)
+      var_value = @current_frame.get_value var_metadata, self, line_number
+      RuntimeValidator::var_exists var_metadata, @current_frame.name, line_number
       var_value
     end
 
@@ -27,6 +28,9 @@ module VM
     end
 
     def new_frame(function)
+      if @call_stack.length > Limits::MAX_FRAME_COUNT
+        byebug
+      end
       RuntimeValidator::frame_memory_available @call_stack.length, @current_frame.name
       @call_stack << Frame.new(function, @current_frame)
     end
@@ -35,13 +39,16 @@ module VM
       @call_stack.last.set_param param_number, var_value, self
     end
 
-    def set_value(var_metadata, var_value)
+    def set_value(var_metadata, var_value, line_number)
       unless var_metadata.is_temp
         @var_count += 1
+        if @var_count > Limits::MAX_VAR_COUNT
+          byebug
+        end
         RuntimeValidator::var_memory_available(
-          @var_count, @current_frame.name)
+          @var_count, @current_frame.name, line_number)
       end
-      @current_frame.set_value var_metadata, var_value, self
+      @current_frame.set_value var_metadata, var_value, self, line_number
     end
 
     def set_return_metadata(return_metadata, instruction_number)
@@ -49,14 +56,19 @@ module VM
       @current_frame.pending_return = return_metadata unless return_metadata.nil?
     end
 
-    def set_return(return_value)
+    def set_return(return_value, line_number)
       return_metadata = @current_frame.dispatcher.pending_return
       @current_frame.dispatcher.set_value(
-        return_metadata, return_value, self)
+        return_metadata, return_value, self, line_number)
+      end_frame
     end
 
     def start_frame
       @current_frame = @call_stack.last
+    end
+
+    def to_s
+      str = "MEMORY\ncurrent_frame = #{@current_frame}"
     end
   end
 end

@@ -7,10 +7,10 @@ module VM
 
     module_function
 
-    def get_value(operand, memory)
+    def get_value(operand, memory, line_number)
       unless operand.nil?
         if operand.is_a?(VarAccess) || operand.is_a?(Symbols::Var)
-          return memory.get_value operand
+          return memory.get_value operand, line_number
         end
       end
       operand
@@ -20,7 +20,10 @@ module VM
       begin
         process.call()
       rescue MateRuntimeError => err
-        abort "Error corriendo el programa: #{err.msg}. En la función #{err.function}"
+        unless err.line_number.nil?
+          line_number = " en la línea #{err.line_number}"
+        end
+        abort "Error corriendo el programa: #{err.msg}. En la función #{err.function}#{line_number}"
       end
     end
   end

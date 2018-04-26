@@ -9,7 +9,7 @@ module VM
   class UnaryOperation < OperationHandler
     def execute(operator, memory)
       result_value = _execute operator, memory
-      memory.set_value @result_metadata, result_value unless result_value.nil?
+      memory.set_value @result_metadata, result_value, @line_number unless result_value.nil?
     end
 
     private
@@ -37,7 +37,8 @@ module VM
     def _not(memory)
       RuntimeValidator::operand_type(
         @left_operand, Types::BOOL,
-        memory.current_frame_name)
+        memory.current_frame_name,
+        @line_number)
       Memory::Value.bool !@left_operand.value
     end
 

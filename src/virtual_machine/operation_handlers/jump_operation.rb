@@ -16,7 +16,8 @@ module VM
       elsif operator.gotof?
         RuntimeValidator::operand_type(
           @left_operand, Types::BOOL,
-          memory.current_frame_name
+          memory.current_frame_name,
+          @line_number
         )
         if @left_operand.value
           current_instruction + 1

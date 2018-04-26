@@ -1,11 +1,12 @@
 class Quadruple
-  attr_reader :operator, :left_operand, :result
+  attr_reader :operator, :left_operand, :result, :line_number
   attr_accessor :right_operand
   def initialize(operator, left_operand, right_operand, result)
     @operator = operator
     @left_operand = left_operand
     @right_operand = right_operand
     @result = result
+    @line_number = $line_number
   end
 
   def to_s

@@ -1,0 +1,26 @@
+programa ProgramacionDinamica {
+  funcion origen {
+    var fibo = [0,1];
+    mientras(cierto) {
+      escribe("Escribe iteraciones para fibonacci");
+      var iteraciones = lee();
+      si(!fibo[iteraciones]) {
+        var cuenta = iteraciones;
+        var bandera = falso;
+        mientras(cuenta > 1 && !bandera) {
+          si(fibo[cuenta]) {
+            bandera = cierto;
+          }
+          cuenta = cuenta - 1;
+        }
+        var resultado;
+        mientras(cuenta < iteraciones) {
+          resultado = fibo[cuenta] + fibo[cuenta-1];
+          cuenta = cuenta + 1;
+          fibo[cuenta] = resultado;
+        }
+      }
+      escribe(fibo[iteraciones]);
+    }
+  }
+}

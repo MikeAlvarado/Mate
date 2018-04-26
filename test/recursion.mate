@@ -1,14 +1,13 @@
 programa Recursion {
   funcion fibonacci(iteracion) {
-    si(iteracion <= 0) {
-      regresa 0;
-    }
-    si(iteracion == 1) {
-      regresa 1;
+    si(iteracion <= 1) {
+      regresa iteracion;
     }
     regresa fibonacci(iteracion-1) + fibonacci(iteracion-2);
   }
   funcion origen {
-    escribe(fibonacci(5));
+    escribe("Escribe el numero de iteraciones de fibonacci");
+    var numero = lee();
+    escribe(fibonacci(numero));
   }
 }

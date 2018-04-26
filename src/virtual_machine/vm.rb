@@ -25,26 +25,39 @@ module VM
       }
     end
 
-    def get_value operand, memory
-      Utility::get_value operand, @memory
+    def get_value operand, memory, line_number
+      Utility::get_value operand, @memory, line_number
     end
 
     def run(instruction)
+      line_number = instruction.line_number
       operator = instruction.operator
-      left_value = get_value instruction.left_operand, @memory
-      right_value = get_value instruction.right_operand, @memory
+      left_value = get_value instruction.left_operand, @memory, line_number
+      right_value = get_value instruction.right_operand, @memory, line_number
       result_operand = instruction.result
 
       if operator.binary_operation?
-        operation = BinaryOperation.new left_value, right_value, result_operand
+        operation = BinaryOperation.new(
+          left_value,
+          right_value,
+          result_operand,
+          line_number)
         operation.execute operator, @memory
 
       elsif operator.jump_operation?
-        operation = JumpOperation.new left_value, right_value, result_operand
+        operation = JumpOperation.new(
+          left_value,
+          right_value,
+          result_operand,
+          line_number)
         return operation.execute operator, @current_instruction, @memory
 
       elsif operator.unary_operation?
-        operation = UnaryOperation.new left_value, nil, result_operand
+        operation = UnaryOperation.new(
+          left_value,
+          nil,
+          result_operand,
+          line_number)
         operation.execute operator, @memory
 
       elsif operator.era?
@@ -57,7 +70,7 @@ module VM
         @memory.start_frame
 
       elsif operator.return?
-        @memory.set_return left_value
+        return @memory.set_return left_value, line_number
       end
 
       @current_instruction + 1
