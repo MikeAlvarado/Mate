@@ -23,6 +23,7 @@ rule
 
   [0-9]+\.[0-9]+         { [:CST_DEC,           text.to_f] }
   [0-9]+                 { [:CST_INT,           text.to_i] }
+  \#.                    { [:COMMENT,           text] }
   \"(\\.|[^\"])*\"       { [:CST_STR,           text] }
   ==                     { [:OP_EQUAL,          text] }
   !=                     { [:OP_NOT_EQUAL,      text] }
