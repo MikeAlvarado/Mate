@@ -15,6 +15,7 @@ module Instructions
 
   BINARY_OPERATIONS = (0..12)
   UNARY_OPERATIONS = (13..16)
+  JUMP_OPERATIONS = (17..20)
 end
 
 class Instruction
@@ -24,61 +25,16 @@ class Instruction
     @id = id
   end
 
-  def to_s
-    case @id
-      when RETURN
-        'return'
-      when SOF
-        'sof'
-      when WRITE
-        'write'
-      when READ
-        'read'
-      when GOSUB
-        'gosub'
-      when PARAM
-        'param'
-      when ERA
-        'era'
-      when EOF
-        'eof'
-      when EOP
-        'eop'
-      when GOTO
-        'goto'
-      when GOTOF
-        'gotof'
-      when EQUAL
-        '=='
-      when NOT_EQUAL
-        '!='
-      when LESS_EQUAL
-        '<='
-      when GREATER_EQUAL
-        '>='
-      when LESS
-        '<'
-      when GREATER
-        '>'
-      when AND
-        '&&'
-      when OR
-        '||'
-      when MOD
-        '%'
-      when MULTIPLY
-        '*'
-      when DIVIDE
-        '/'
-      when ADD
-        '+'
-      when SUBTRACT
-        '-'
-      when ASSIGN
-        '='
-      when NOT
-        '!'
-    end
+  def binary_operation?
+    BINARY_OPERATIONS.cover? @id
+  end
+
+  def unary_operation?
+    UNARY_OPERATIONS.cover? @id
+  end
+
+  def jump_operation?
+    JUMP_OPERATIONS.cover? @id
   end
 
   def return?
@@ -183,5 +139,62 @@ class Instruction
 
   def not?
     @id == NOT
+  end
+
+  def to_s
+    case @id
+      when RETURN
+        'return'
+      when SOF
+        'sof'
+      when WRITE
+        'write'
+      when READ
+        'read'
+      when GOSUB
+        'gosub'
+      when PARAM
+        'param'
+      when ERA
+        'era'
+      when EOF
+        'eof'
+      when EOP
+        'eop'
+      when GOTO
+        'goto'
+      when GOTOF
+        'gotof'
+      when EQUAL
+        '=='
+      when NOT_EQUAL
+        '!='
+      when LESS_EQUAL
+        '<='
+      when GREATER_EQUAL
+        '>='
+      when LESS
+        '<'
+      when GREATER
+        '>'
+      when AND
+        '&&'
+      when OR
+        '||'
+      when MOD
+        '%'
+      when MULTIPLY
+        '*'
+      when DIVIDE
+        '/'
+      when ADD
+        '+'
+      when SUBTRACT
+        '-'
+      when ASSIGN
+        '='
+      when NOT
+        '!'
+    end
   end
 end

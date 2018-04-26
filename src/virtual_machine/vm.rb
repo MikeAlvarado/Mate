@@ -1,9 +1,8 @@
 require 'byebug'
-require 'constants/limits'
 require 'constants/reserved_words'
-require 'ir/instructions'
-require 'validators/runtime_validator'
-require_relative 'operation_handler'
+require_relative 'operation_handlers/binary_operation'
+require_relative 'operation_handlers/jump_operation'
+require_relative 'operation_handlers/unary_operation'
 require_relative 'runtime_memory'
 require_relative 'utility'
 
@@ -26,37 +25,48 @@ module VM
       }
     end
 
+    def get_value operand, memory
+      Utility::get_value operand, @memory
+    end
+
     def run(instruction)
-      case(instruction.operator.id)
-        when Instructions::ERA
-          @memory.new_frame @functions[instruction.result]
-        when Instructions::PARAM
-          result = Utility::get_value instruction.result, @memory
-          @memory.set_param instruction.left_operand, result
-        when Instructions::GOSUB
-          @memory.set_return_addr instruction.result, @current_instruction
-          return instruction.right_operand
-        when Instructions::GOTO
-          return instruction.result
-        when Instructions::GOTOF
-          left_operand = Utility::get_value instruction.left_operand, @memory
-          return instruction.result unless left_operand.value
-        when Instructions::EOF
-          return @memory.end_frame
-        when Instructions::EOP
-        when Instructions::SOF
-          @memory.start_frame
-        when Instructions::RETURN
-          unless instruction.result.nil?
-            return_value = Utility::get_value instruction.result, @memory
-            @memory.set_return return_value
-          end
-        when Instructions::UNARY_OPERATIONS, Instructions::BINARY_OPERATIONS
-          left_operand = Utility::get_value instruction.left_operand, @memory
-          right_operand = Utility::get_value instruction.right_operand, @memory
-          operation = OperationHandler.new left_operand, right_operand, instruction.result
-          operation.execute_operation instruction.operator, @memory
+      operator = instruction.operator
+      left_operand = instruction.left_operand
+      right_operand = instruction.right_operand
+      result_operand = instruction.result
+
+      if operator.binary_operation?
+        left_value = get_value left_operand, @memory
+        right_value = get_value right_operand, @memory
+        operation = BinaryOperation.new left_value, right_value, result_operand
+        operation.execute operator, @memory
+
+      elsif operator.jump_operation?
+        left_value = get_value left_operand, @memory
+        right_value = get_value right_operand, @memory
+        operation = JumpOperation.new left_value, right_value, result_operand
+        return operation.execute operator, @current_instruction, @memory
+
+      elsif operator.unary_operation?
+        left_value = get_value left_operand, @memory
+        operation = UnaryOperation.new left_value, nil, result_operand
+        operation.execute operator, @memory
+
+      elsif operator.era?
+        @memory.new_frame @functions[result_operand]
+
+      elsif operator.param?
+        result_value = Utility::get_value result_operand, @memory
+        @memory.set_param left_operand, result_value
+
+      elsif operator.sof?
+        @memory.start_frame
+
+      elsif operator.return?
+        result_value = Utility::get_value result_operand, @memory
+        @memory.set_return result_value
       end
+
       @current_instruction + 1
     end
   end

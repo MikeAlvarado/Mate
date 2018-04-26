@@ -84,7 +84,6 @@ module IR
       operand = get_operand memory
       @quadruples.push Quadruple.new(Instruction.new(Instructions::GOTOF), operand, nil, nil)
 
-      memory.dealloc_temp operand if operand.is_a? Memory::Entry
       @gotos << @quadruples.length - 1
     end
 

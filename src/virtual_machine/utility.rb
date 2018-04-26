@@ -1,4 +1,5 @@
-require 'memory/value'
+require 'ir/var_access'
+require 'symbols/var'
 require 'validators/mate_runtime_error'
 
 module VM
@@ -8,9 +9,11 @@ module VM
 
     def get_value(operand, memory)
       unless operand.nil?
-        return operand if operand.is_a? Memory::Value
-        memory.get_value operand
+        if operand.is_a?(VarAccess) || operand.is_a?(Symbols::Var)
+          return memory.get_value operand
+        end
       end
+      operand
     end
 
     def execute_safely(process)

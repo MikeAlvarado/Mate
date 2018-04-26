@@ -1,3 +1,4 @@
+require 'byebug'
 require 'constants/limits'
 require 'constants/semantic_cube'
 require 'constants/types'
@@ -19,8 +20,8 @@ module RuntimeValidator
     raise MateRuntimeError.invalid_operand_type(operand, Type.new(type), function) if operand.type.id != type
   end
 
-  def operation_is_valid(result_type, function)
-    raise MateRuntimeError.invalid_operation(function) if result_type == Types::INVALID || result_type == Types::UNDEFINED
+  def operation_is_valid(left, right, operator, result, function)
+    raise MateRuntimeError.invalid_operation(left, right, operator, function) if result == Types::INVALID || result == Types::UNDEFINED
   end
 
   def var_memory_available(local_size, function)

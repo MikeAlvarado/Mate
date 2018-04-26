@@ -13,8 +13,8 @@ class MateRuntimeError < RuntimeError
     MateRuntimeError.new "Se esperaba un operando del tipo #{type} y se obtuvo uno tipo #{operand.type}", function
   end
 
-  def self.invalid_operation(function)
-    MateRuntimeError.new 'Operación inválida', function
+  def self.invalid_operation(left, right, operator, function)
+    MateRuntimeError.new "Operación inválida: #{left} #{operator} #{right}", function
   end
 
   def self.insufficient_memory(function)
