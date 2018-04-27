@@ -1,4 +1,8 @@
+/*
+* Programa que pide 3 números, los suma, multiplica, resta y despliega resultados
+*/
 programa Aritmetica {
+    // regresa la multiplicación de los elementos del arreglo
     funcion multiplica(x) {
         var resultado = 1;
         var cuenta = 0;
@@ -8,6 +12,7 @@ programa Aritmetica {
         }
         regresa resultado;
     }
+    // regresa la resta de los elementos del arreglo
     funcion resta(x) {
         var resultado = x[0];
         var cuenta = 0;
@@ -17,6 +22,7 @@ programa Aritmetica {
         }
         regresa resultado;
     }
+    // regresa la suma de los elementos del arreglo
     funcion suma(x) {
         var resultado = 0;
         var cuenta = 0;

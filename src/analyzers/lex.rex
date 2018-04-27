@@ -2,9 +2,13 @@ require_relative 'parserino'
 
 class Mate
 macro
-  BLANK     [\ \t\n]
+  BLANK           [\ \t\n]
+  LINE_COMMENT    (?:^[\s\t]+)?(\/\/).*$\n?
+  BLOCK_COMMENT   \/\*(\*(?!\/)|[^*])*\*\/
 rule
   {BLANK}
+  {BLOCK_COMMENT}
+  {LINE_COMMENT}
   [a-zA-Z\_][\_a-zA-Z0-9]*   { $line_number = lineno; 
                           if text == "programa" then return     [:PROGRAM,  text]
                           elsif text == "funcion" then return   [:FUNCTION, text]
@@ -23,7 +27,6 @@ rule
 
   [0-9]+\.[0-9]+         { [:CST_DEC,           text.to_f] }
   [0-9]+                 { [:CST_INT,           text.to_i] }
-  \#.                    { [:COMMENT,           text] }
   \"(\\.|[^\"])*\"       { [:CST_STR,           text] }
   ==                     { [:OP_EQUAL,          text] }
   !=                     { [:OP_NOT_EQUAL,      text] }
