@@ -1,0 +1,11 @@
+programa crasher {
+  funcion origen {
+    var a = nulo;
+    si(!a) {
+      escribe("no nulo");
+    }
+    pero si no {
+      escribe("nulo");
+    }
+  }
+}

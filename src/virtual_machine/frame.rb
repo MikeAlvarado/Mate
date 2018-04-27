@@ -27,7 +27,6 @@ module VM
       else
         array = value
         index = Utility::get_value var_metadata.index, memory, line_number
-        RuntimeValidator::index_within_bounds index.value, array.value.length, @name, line_number
         array.value[index.value]
       end
     end

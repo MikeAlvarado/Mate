@@ -10,14 +10,15 @@ module VM
   class BinaryOperation < OperationHandler
     def execute(operator, memory)
       result_type_id = SemanticCube::resolve @left_operand, @right_operand, operator
+
+      result_type = Type.new result_type_id
       RuntimeValidator::operation_is_valid(@left_operand,
         @right_operand,
         operator,
-        result_type_id,
+        result_type,
         memory.current_frame_name,
         @line_number)
 
-      result_type = Type.new result_type_id
       if operator.add? && result_type.string?
         result_value = "#{@left_operand.value}#{@right_operand.value}"
       else

@@ -86,7 +86,7 @@ module SemanticCube
     }
   end
 
-  def common(right_type, left_type)
+  def common(left_type, right_type)
     {
       EQUAL => BOOL,
       NOT_EQUAL => BOOL,

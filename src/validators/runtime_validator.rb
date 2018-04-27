@@ -21,7 +21,7 @@ module RuntimeValidator
   end
 
   def operation_is_valid(left, right, operator, result, function, line_number)
-    raise MateRuntimeError.invalid_operation(left, right, operator, function, line_number) if result == Types::INVALID || result == Types::UNDEFINED
+    raise MateRuntimeError.invalid_operation(left, right, operator, function, line_number) if result.invalid? || result.undefined?
   end
 
   def var_memory_available(local_size, function, line_number)

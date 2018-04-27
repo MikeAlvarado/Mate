@@ -1,3 +1,6 @@
+/*
+* Programa que genera soluciones con programación dinámica
+*/
 programa ProgramacionDinamica {
   funcion origen {
     var fibo = [0,1];

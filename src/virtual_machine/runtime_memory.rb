@@ -28,9 +28,6 @@ module VM
     end
 
     def new_frame(function)
-      if @call_stack.length > Limits::MAX_FRAME_COUNT
-        byebug
-      end
       RuntimeValidator::frame_memory_available @call_stack.length, @current_frame.name
       @call_stack << Frame.new(function, @current_frame)
     end
@@ -42,9 +39,6 @@ module VM
     def set_value(var_metadata, var_value, line_number)
       unless var_metadata.is_temp
         @var_count += 1
-        if @var_count > Limits::MAX_VAR_COUNT
-          byebug
-        end
         RuntimeValidator::var_memory_available(
           @var_count, @current_frame.name, line_number)
       end

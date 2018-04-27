@@ -14,6 +14,7 @@ module ReservedWords
   RETURN = 'regresa'
   TRUE = 'cierto'
   FALSE = 'falso'
+  NIL = 'nulo'
 
   module_function
   @words = nil

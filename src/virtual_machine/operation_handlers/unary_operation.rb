@@ -35,10 +35,6 @@ module VM
     end
 
     def _not(memory)
-      RuntimeValidator::operand_type(
-        @left_operand, Types::BOOL,
-        memory.current_frame_name,
-        @line_number)
       Memory::Value.bool !@left_operand.value
     end
 

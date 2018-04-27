@@ -1,4 +1,6 @@
+require 'byebug'
 require 'ir/var_access'
+require 'memory/value'
 require 'symbols/var'
 require 'validators/mate_runtime_error'
 
@@ -10,7 +12,13 @@ module VM
     def get_value(operand, memory, line_number)
       unless operand.nil?
         if operand.is_a?(VarAccess) || operand.is_a?(Symbols::Var)
-          return memory.get_value operand, line_number
+          memory_entry = memory.get_value operand, line_number
+          if memory_entry.nil? ||
+            memory_entry.value.nil?
+            return Memory::Value.undefined
+          else
+            return memory_entry
+          end
         end
       end
       operand

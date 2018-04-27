@@ -80,13 +80,14 @@ rule
 
   op_assign:
     OP_ASSIGN                                         { @parser.new_operator Operators::ASSIGN }
-    expression                                        { }
+    expression                                        {}
 
   constant:
-    CST_STR                                           { result = Memory::Value.string val[0] }
-    | CST_INT                                         { result = Memory::Value.int val[0].to_i }
-    | CST_DEC                                         { result = Memory::Value.float val[0].to_f }
-    | cst_bool                                        { result = Memory::Value.bool val[0] }
+    CST_STR                                           { result = Memory::Value.string val[0]      }
+    | CST_INT                                         { result = Memory::Value.int val[0].to_i    }
+    | CST_DEC                                         { result = Memory::Value.float val[0].to_f  }
+    | cst_bool                                        { result = Memory::Value.bool val[0]        }
+    | NIL                                             { result = Memory::Value.undefined          }
 
   cst_bool:
     TRUE                                              { result = true }
