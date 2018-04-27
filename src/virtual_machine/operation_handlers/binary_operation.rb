@@ -21,6 +21,10 @@ module VM
 
       if operator.add? && result_type.string?
         result_value = "#{@left_operand.value}#{@right_operand.value}"
+      elsif operator.and?
+        result_value = @left_operand.value && @right_operand.value
+      elsif operator.or?
+        result_value = @left_operand.value || @right_operand.value
       else
         result_value = @left_operand.value.send operator.to_s, @right_operand.value
       end

@@ -1,11 +1,9 @@
+trae 'aritmetica'
+
 programa crasher {
   funcion origen {
-    var a = nulo;
-    si(!a) {
-      escribe("no nulo");
-    }
-    pero si no {
-      escribe("nulo");
-    }
+    var a = [1, 2, 3];
+    var resultado = Aritmetica.multiplica(a);
+    escribe(resultado);
   }
 }
