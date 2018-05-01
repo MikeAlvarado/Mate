@@ -1,9 +1,10 @@
 require 'byebug'
 require 'constants/operators'
 require 'constants/reserved_words'
+require 'constants/types'
 require 'ir/quadruples'
 require 'memory/manager'
-require 'symbols/program'
+require 'symbols/module'
 require 'virtual_machine/vm'
 require_relative 'function_call'
 
@@ -13,66 +14,66 @@ module Parser
       @function_calls = []
       @ir = IR::Quadruples.new #'ir' is short for 'intermediate representation'
       @memory = Memory::Manager.new
-      @program = nil
+      @module = nil
     end
 
     def ass_var(name:, index: nil)
       Utility::execute_safely -> () {
-        Validate::var_exists @program.current_function, name
+        Validate::var_exists @module.current_function, name
         @ir.assign_var name, index, @memory
       }
     end
 
     def call_func
-      @ir.func_call @memory, @function_calls.pop.func, @program.current_function
+      @ir.func_call @memory, @function_calls.pop.func, @module.current_function
     end
 
     def def_func(name)
       Utility::execute_safely -> () {
-        @program.def_func name, @ir
+        @module.def_func name, @ir
       }
     end
 
     def def_origin
       Utility::execute_safely -> () {
-        @program.def_origin @ir
+        @module.def_origin @ir
       }
     end
 
     def def_param(name)
       Utility::execute_safely -> () {
-        param_entry = @program.def_param name
+        param_entry = @module.def_param name
         @memory.alloc param_entry
       }
     end
 
-    def def_program(name)
+    def def_module(name)
       Utility::execute_safely -> () {
-          program = Symbols::Program.new name
-          Validate::symbol_is_not_reserved program
-          @program = program
+          mate_module = Symbols::MateModule.new name
+          Validate::symbol_is_not_reserved mate_module
+          @module = mate_module
       }
     end
 
     def def_scope
-      @program.def_scope
+      @module.def_scope
     end
 
     def def_var(name, assigning)
       Utility::execute_safely -> () {
-        new_var = @program.def_var name
+        new_var = @module.def_var name
         @memory.alloc new_var
         ass_var({ name: name }) if assigning
       }
     end
 
     def del_scope
-      scope_vars = @program.current_function.current_scope.vars
+      scope_vars = @module.current_function.current_scope.vars
       scope_vars.each_value {
         |var_value|
         @memory.dealloc var_value
       }
-      @program.del_scope
+      @module.del_scope
     end
 
     def else_start
@@ -80,11 +81,11 @@ module Parser
     end
 
     def eval_binary_op
-      Utility::execute_safely -> () { @ir.eval_binary_op @memory, @program.current_function }
+      Utility::execute_safely -> () { @ir.eval_binary_op @memory, @module.current_function }
     end
 
     def eval_negation
-      Utility::execute_safely -> () { @ir.eval_negation @memory, @program.current_function }
+      Utility::execute_safely -> () { @ir.eval_negation @memory, @module.current_function }
     end
 
     def finished_statement_function_call
@@ -92,17 +93,17 @@ module Parser
     end
 
     def func_end
-      @ir.func_end @program.current_function
+      @ir.func_end @module.current_function
     end
 
     def func_return
-      @ir.func_return @memory, @program.current_function
+      @ir.func_return @memory, @module.current_function
     end
 
     def handle_var_value(name, is_accessing_an_array)
       index = nil
       Utility::execute_safely -> () {
-        Validate::var_exists @program.current_function, name
+        Validate::var_exists @module.current_function, name
         index = @ir.get_operand @memory if is_accessing_an_array
       }
       { name: name, index: index }
@@ -114,6 +115,12 @@ module Parser
 
     def if_end
       Utility::execute_safely -> () { @ir.if_end }
+    end
+
+    def import(filename)
+      Utility::execute_safely -> () {
+        Validate::operand_type(filename, Types::STRING)
+      }
     end
 
     def loop_condition_end
@@ -130,20 +137,28 @@ module Parser
 
     def program_complete(name)
       Utility::execute_safely -> () {
-        Validate::function_exists @program, ReservedWords::ORIGIN
+        Validate::function_exists @module, ReservedWords::ORIGIN
       }
       @ir.program_end
       if $debug
         puts @ir
-        puts "Programa '#{name}' compilado.\n\n"
+        puts "Módulo '#{name}' compilado.\n\n"
       end
-      vm = VM::Runner.new @ir.quadruples, @program.functions
+      vm = VM::Runner.new @ir.quadruples, @module.functions
       vm.start
+    end
+
+    def module_complete(name)
+      @ir.module_end
+      if $debug
+        puts @ir
+        puts "Módulo '#{name}' compilado.\n\n"
+      end
     end
 
     def new_call(name)
       Utility::execute_safely -> () {
-        func = @program.get_func name
+        func = @module.get_func name
         @function_calls << FunctionCall.new(func)
         @ir.func_prep func
       }
@@ -157,7 +172,7 @@ module Parser
     def new_operand(operand, has_sign = false)
       unless operand.nil?
         Utility::execute_safely -> () {
-          Validate::var_exists(@program.current_function, operand) if operand.is_a? Symbols::Var
+          Validate::var_exists(@module.current_function, operand) if operand.is_a? Symbols::Var
           if has_sign
             sign = @ir.get_operator
             if sign.subtract?
@@ -174,7 +189,7 @@ module Parser
     end
 
     def read
-      @ir.read @memory, @program.current_function
+      @ir.read @memory, @module.current_function
     end
 
     def verify_params

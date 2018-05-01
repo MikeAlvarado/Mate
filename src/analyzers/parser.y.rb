@@ -1,16 +1,28 @@
 class Mate
 rule
   program:
-    program_def L_BRACKET functions R_BRACKET
+    import modules
     {
       @parser.program_complete val[0]
     }
 
-  program_def:
-    PROGRAM ID
+  import:
+    /* empty */                                       {}
+    | IMPORT CST_STR SEMICOLON import                 { @parser.import val[1] }
+
+  modules:
+    module_def L_BRACKET functions R_BRACKET          { @parser.module_complete val[0] }
+    _modules                                          {}
+
+  _modules:
+    /* empty */                                       {}
+    modules _modules                                  {}
+
+  module_def:
+    MODULE ID
     {
       result = val[1]
-      @parser.def_program val[1]
+      @parser.def_module val[1]
     }
 
   functions:

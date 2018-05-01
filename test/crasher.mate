@@ -1,4 +1,4 @@
-trae 'aritmetica'
+prepara "aritmetica";
 
 programa crasher {
   funcion origen {

@@ -2,7 +2,7 @@ require 'validators/mate_error'
 require_relative 'function'
 
 module Symbols
-  class Program
+  class MateModule
     attr_reader :name, :functions, :current_function
     def initialize(name)
       @name = name

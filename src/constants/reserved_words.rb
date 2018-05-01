@@ -8,7 +8,7 @@ module ReservedWords
   READ = 'lee'
   WRITE = 'escribe'
   WHILE = 'mientras'
-  PROGRAM = 'programa'
+  MODULE = 'modulo'
   FUNC = 'funcion'
   VAR = 'var'
   RETURN = 'regresa'

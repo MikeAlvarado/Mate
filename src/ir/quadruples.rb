@@ -195,6 +195,12 @@ module IR
         nil, nil, nil)
     end
 
+    def module_end(mate_module)
+      @quadruples.push Quadruple.new(
+        Instruction.new(Instructions::EOM),
+        mate_module.name, nil, nil)
+    end
+
     def read(memory, current_func)
       result = memory.alloc_temp
       save_operation(

@@ -10,7 +10,7 @@ rule
   {BLOCK_COMMENT}
   {LINE_COMMENT}
   [a-zA-Z\_][\_a-zA-Z0-9]*   { $line_number = lineno; 
-                          if text == "programa" then return     [:PROGRAM,  text]
+                          if text == "modulo" then return       [:MODULE,   text]
                           elsif text == "funcion" then return   [:FUNCTION, text]
                           elsif text == "origen" then return    [:ORIGIN,   text]
                           elsif text == "var" then return       [:VAR,      text]
@@ -24,11 +24,12 @@ rule
                           elsif text == "nulo" then return      [:NIL,      text]
                           elsif text == "escribe" then return   [:WRITE,    text]
                           elsif text == "lee" then return       [:READ,     text]
+                          elsif text == "prepara" then return   [:IMPORT,   text]
                           else return [:ID, text] end }
 
   [0-9]+\.[0-9]+         { [:CST_DEC,           text.to_f] }
   [0-9]+                 { [:CST_INT,           text.to_i] }
-  \"(\\.|[^\"])*\"       { [:CST_STR,           text] }
+  (\"(\\.|[^\"])*\")|(\'(\\.|[^\'])*\')       { [:CST_STR,           text] }
   ==                     { [:OP_EQUAL,          text] }
   !=                     { [:OP_NOT_EQUAL,      text] }
   \<=                    { [:OP_LESS_EQUAL,     text] }

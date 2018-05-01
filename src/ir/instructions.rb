@@ -7,11 +7,12 @@ module Instructions
   GOTO          = 18
   GOTOF         = 19
   EOF           = 20 # End of function
-  EOP           = 21 # End of program
-  ERA           = 22 # Activation record expansion
-  PARAM         = 23
-  RETURN        = 24
-  SOF           = 25
+  EOM           = 21 # End of module
+  EOP           = 22 # End of program
+  ERA           = 23 # Activation record expansion
+  PARAM         = 24
+  RETURN        = 25
+  SOF           = 26
 
   BINARY_OPERATIONS = (0..12)
   UNARY_OPERATIONS = (13..16)

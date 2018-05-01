@@ -1,7 +1,7 @@
 /*
 * Programa que pide 3 números, los suma, multiplica, resta y despliega resultados
 */
-programa Aritmetica {
+modulo Aritmetica {
     // regresa la multiplicación de los elementos del arreglo
     funcion multiplica(x) {
         var resultado = 1;

@@ -60,7 +60,7 @@ module Symbols
     def self.undefined_err(program_name, name)
       MateError.new "#{Base.message_detail program_name}"\
       "Error de semántica: la función '#{name}' "\
-      "no está definida en el programa."
+      "no está definida en el módulo."
     end
 
     def duplicate_err(program_name)
