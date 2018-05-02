@@ -4,6 +4,9 @@ require 'constants/types'
 require_relative 'mate_error'
 
 module Validate
+  # Validate
+  # Functions for throwing errors in case an error should be thrown
+  # during run time AND compile time
   module_function
 
   def can_delete_scope(scope)

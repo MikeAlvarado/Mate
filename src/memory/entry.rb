@@ -1,5 +1,5 @@
-# On compilation time, the memory manager uses this
-# class to allocate and deallocate memory
+# A variable can be a Symbols::Var which inherits from Entry
+# Entry by itself is used for managing memory on compile time
 
 module Memory
   class Entry

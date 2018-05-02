@@ -1,3 +1,8 @@
+# MateRuntimeError < RuntimeError
+# Errors thrown during run time
+# @msg          - Error message
+# @function     - Function name that contains the error
+# @line_number  - Line number of the instruction that threw the error
 class MateRuntimeError < RuntimeError
   attr_reader :msg, :function, :line_number
   def initialize(msg, function, line_number = nil)

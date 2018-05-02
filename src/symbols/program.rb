@@ -2,6 +2,10 @@ require 'validators/mate_error'
 require_relative 'function'
 
 module Symbols
+  # Symbols::Program
+  # @name             - The name of the program
+  # @current_function - The function currently being compiled
+  # @functions        - Hash of functions (key: function name, value: Symbols::Function)
   class Program
     attr_reader :name, :functions, :current_function
     def initialize(name)

@@ -5,6 +5,9 @@ require 'validators/runtime_validator'
 require_relative 'frame'
 
 module VM
+  # RuntimeMemory
+  # @call_stack   - Stack of frames
+  # @var_count    - Number of vars used in all the program
   class RuntimeMemory
     def initialize(origin)
       @call_stack = [Frame.new(origin)]

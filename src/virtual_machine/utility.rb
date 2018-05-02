@@ -9,6 +9,10 @@ module VM
 
     module_function
 
+    # Operands in the quadruples can be stored in memory
+    # or they can be constants, or they can be nil values.
+    # This utility function validates all that and returns
+    # the value for the operand
     def get_value(operand, memory, line_number)
       unless operand.nil?
         if operand.is_a?(VarAccess) || operand.is_a?(Symbols::Var)
@@ -24,6 +28,9 @@ module VM
       operand
     end
 
+    # Just as with the parser, all functions that need to validate
+    # anything, should be called through execute_safely so that we
+    # can rescue the errors
     def execute_safely(process)
       begin
         process.call()

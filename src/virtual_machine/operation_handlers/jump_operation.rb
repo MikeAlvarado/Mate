@@ -4,6 +4,8 @@ require 'validators/runtime_validator'
 require_relative 'base'
 
 module VM
+  # JumpOperation < OperationHandler
+  # Handles GOSUB, GOTO, GOTOF, and end of function
   class JumpOperation < OperationHandler
     def execute(operator, current_instruction, memory)
       if operator.gosub?

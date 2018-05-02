@@ -3,6 +3,10 @@ require 'constants/reserved_words'
 require 'symbols/var'
 require 'validators/validate'
 
+# Scope Class
+# Every scope has its own variables and can access its parent's variables
+# @parent - Scope that created this scope
+# @vars   - Hash of variables (key: var name, value: Symbols::Var)
 class Scope
   attr_reader :parent, :vars
 

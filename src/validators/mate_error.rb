@@ -1,4 +1,7 @@
 require 'constants/types'
+# MateError Class < RuntimeError
+# Each function throws an error with a custom error message
+# @msg = Error message
 class MateError < RuntimeError
   attr_reader :msg
   def initialize(msg)

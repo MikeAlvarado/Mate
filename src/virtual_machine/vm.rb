@@ -7,6 +7,12 @@ require_relative 'runtime_memory'
 require_relative 'utility'
 
 module VM
+  # Runner
+  # When the parser completes compilation, the VM::Runner.start is called
+  # @current_instruction  - Starts being the first instruction of the ORIGIN function
+  # @instructions         - Quadruples list
+  # @functions            - Program functions
+  # @memory               - RuntimeMemory initializing it with the data of ORIGIN
   class Runner
     def initialize(instructions, functions)
       @current_instruction = functions[ReservedWords::ORIGIN].initial_instruction
@@ -29,6 +35,8 @@ module VM
       Utility::get_value operand, @memory, line_number
     end
 
+    # This function receives an instruction and returns the next
+    # instruction to be run
     def run(instruction)
       line_number = instruction.line_number
       operator = instruction.operator
@@ -36,6 +44,8 @@ module VM
       right_value = get_value instruction.right_operand, @memory, line_number
       result_operand = instruction.result
 
+      # With our Operator class and our Instruction class we can 
+      # easily determinate the instruction being run
       if operator.binary_operation?
         operation = BinaryOperation.new(
           left_value,
@@ -43,6 +53,7 @@ module VM
           result_operand,
           line_number)
         operation.execute operator, @memory
+        # After executing an operation, we should release memory addresses
         @memory.remove_temp instruction.left_operand, line_number
         @memory.remove_temp instruction.right_operand, line_number
 
@@ -53,7 +64,9 @@ module VM
           result_operand,
           line_number)
         next_instruction = operation.execute operator, @current_instruction, @memory
+        # After executing an operation, we should release memory addresses
         @memory.remove_temp instruction.left_operand, line_number
+        # All jump_operations return the next instruction to be evaluated
         return next_instruction
 
       elsif operator.unary_operation?
@@ -63,8 +76,10 @@ module VM
           result_operand,
           line_number)
         operation.execute operator, @memory
+        # After executing an operation, we should release memory addresses
         @memory.remove_temp instruction.left_operand, line_number
 
+      # For each function we create a frame
       elsif operator.era?
         @memory.new_frame @functions[left_value]
 

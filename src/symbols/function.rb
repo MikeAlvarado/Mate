@@ -6,6 +6,12 @@ require_relative 'scope'
 require_relative 'var'
 
 module Symbols
+  # Symbols::Function
+  # @name           - Name of the function
+  # @current_scope  - A function contains its scope and the scope of its conditional blocks
+  # @params         - List of parameters
+  # @var_count      - Number of vars (for memory management)
+  # @type           - If the function returns anything, it contains a type other than invalid
   class Function
     attr_reader :name, :params, :current_scope, :type, :var_count
     attr_accessor :initial_instruction

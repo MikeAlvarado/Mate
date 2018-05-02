@@ -2,6 +2,9 @@ require 'memory/entry'
 require 'validators/mate_error'
 
 module Symbols
+  # Symbols::Var
+  # Var inherits from Entry (:addr, :is_temp)
+  # @name - Variable name
   class Var < Memory::Entry
     attr_reader :name
     def initialize(name, entry_metadata = {})

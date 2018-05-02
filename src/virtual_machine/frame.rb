@@ -6,7 +6,14 @@ require 'validators/runtime_validator'
 require_relative 'utility'
 
 module VM
-# todo: eliminate vars after each scope
+  # Frame
+  # Every function gets a frame
+  # @dispatcher   - what function called this function
+  # @size         - how many local variables the function uses
+  # @name         - name of function
+  # @params       - params of function
+  # @local        - queue of addresses used for local variables
+  # @temp         - queue of addresses used for temporary variables
   class Frame
     attr_reader :name, :dispatcher
     attr_accessor :pending_return, :return_to
@@ -19,6 +26,8 @@ module VM
       @temp = []
     end
 
+    # We use the var_metadata to obtain the value
+    # We use memory for getting the value of the index (in case we're accessing an array)
     def get_value(var_metadata, memory, line_number)
       value = var_metadata.is_temp ?
         @temp[var_metadata.addr - Limits::TEMP_START_ADDR]

@@ -5,7 +5,9 @@ require 'constants/types'
 require_relative 'mate_runtime_error'
 
 module RuntimeValidator
-
+  # RuntimeValidator
+  # Functions for throwing errors in case an error should be thrown
+  # during run time
   module_function
 
   def frame_memory_available(local_size, function)
