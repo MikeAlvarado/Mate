@@ -218,12 +218,14 @@ module IR
 
     def element_size(memory)
       operand = get_operand memory
+      result = memory.alloc_temp
       save_operation(
         Instructions::ELEMENT_SIZE,
         operand,
         nil,
-        nil,
+        { addr: result.addr, is_temp: result.is_temp },
         memory)
+      new_operand result
     end
 
     def write(memory)

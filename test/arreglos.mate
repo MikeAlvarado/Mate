@@ -17,7 +17,7 @@ programa FindElement {
     var elemento = lee();
     var i = 0;
     var encontrado = falso;
-    mientras(i < 4 && !encontrado) {
+    mientras(i < talla(arreglo) && !encontrado) {
       si (arreglo[i] == elemento) {
         escribe("El índice del elemento " + elemento + " es " + i);
         encontrado = cierto;

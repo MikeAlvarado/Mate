@@ -17,6 +17,8 @@ module VM
     def _execute(operator, memory)
       if operator.assign?
         _assign
+      elsif operator.element_size?
+        _element_size memory
       elsif operator.not?
         _not memory
       elsif operator.read?
@@ -26,9 +28,10 @@ module VM
       end
     end
 
-    def _element_size
-      RuntimeValidator::can_get_size @left_operand, memory.current_frame_name, @line_number
+    def _element_size(memory)
+      RuntimeValidator::can_get_size @left_operand.type, memory.current_frame_name, @line_number
       Memory::Value.int @left_operand.value.length
+
     end
 
     def _write
@@ -62,7 +65,7 @@ module VM
         Memory::Value.float input.to_f
       when /^[0-9]+$/
         Memory::Value.int input.to_i
-      when /^\[.\,.\]$/
+      when /^\[.*\,.*\]$/
         array = input.tr('[', '').tr(']', '').split(',')
         array = array.map { |s| parse_input(s) }
         Memory::Value.array array

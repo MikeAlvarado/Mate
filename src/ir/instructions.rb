@@ -148,6 +148,8 @@ class Instruction
 
   def to_s
     case @id
+      when ELEMENT_SIZE
+        'element_size'
       when RETURN
         'return'
       when SOF
