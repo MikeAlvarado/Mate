@@ -1,3 +1,7 @@
+# Operators
+# Constants of operators used for identifying the operators
+# specified in the quadruples
+
 module Operators
   EQUAL         = 0
   NOT_EQUAL     = 1
@@ -16,6 +20,9 @@ module Operators
   ASSIGN        = 14
 end
 
+# Operator Class
+# A class for the operator so that we can print errors nicely and
+# easily identify the value of the operator
 class Operator
   include Operators
   attr_reader :id

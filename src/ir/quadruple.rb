@@ -1,3 +1,12 @@
+# Quadruple Class
+# Every instruction is created as a quadruple
+# It's actually a quintiple because we added the
+# line_number in the late stages of development
+
+# @operator       - Instruction
+# @left_operand   - Left operand
+# @right_operand  - Right operand
+# @result         - The variable where the result of an operation should be stored
 class Quadruple
   attr_reader :operator, :left_operand, :result, :line_number
   attr_accessor :right_operand

@@ -1,3 +1,6 @@
+# On compilation time, the memory manager uses this
+# class to allocate and deallocate memory
+
 module Memory
   class Entry
     attr_reader :addr, :is_temp

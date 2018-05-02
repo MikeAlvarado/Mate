@@ -7,6 +7,14 @@ require_relative 'quadruple'
 require_relative 'var_access'
 
 #'IR' is short for 'Intermediate Representation'
+
+# @operands   - Stack of operands
+# @operators  - Stack of operators
+# @quadruples - Stack of quadruples
+# @gotos      - Stack of go-to's
+
+# The masterpiece method of this class is save_operation
+
 module IR
   class Quadruples
     attr_reader :quadruples
@@ -25,6 +33,11 @@ module IR
       @operands.push(operand) unless operand.nil?
     end
 
+    # During runtime, we only care about the memory address,
+    # if it's a temporary var, and the index if it's
+    # accessing an array.
+    # Unless it's a constant. Then we only care about the
+    # the value and type of the constant.
     def get_operand(memory)
       op = @operands.pop
       if op.is_a?(Memory::Value) || op.is_a?(VarAccess)
@@ -75,7 +88,7 @@ module IR
         Instructions::NOT,
         operand,
         nil,
-        {addr: result.addr, is_temp: result.is_temp},
+        { addr: result.addr, is_temp: result.is_temp },
         memory)
       new_operand result
     end
@@ -205,6 +218,11 @@ module IR
       new_operand result
     end
 
+    # In most cases, the instructions follow the same steps for
+    # saving a new quadruple.
+    # This method makes sure the result value is a VarAccess
+    # and it calls memory.dealloc_temp so that it can dealloc
+    # the address being used if the operand is a temporary var
     def save_operation(operator, left, right, result, memory)
       result_access = VarAccess.new(result) unless result.nil?
       @quadruples.push Quadruple.new(

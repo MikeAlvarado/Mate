@@ -7,6 +7,22 @@ require 'symbols/program'
 require 'virtual_machine/vm'
 require_relative 'function_call'
 
+# Parser/Helper
+# This class contains the methods that the parser calls
+# while parsing the program.
+
+# @program - Contains the current function being compiled.
+#  Manages adding scopes, variables, and functions.
+
+# @ir - Contains the current state of the quadruples.
+#  Manages adding new instructions.
+
+# @function_calls - A stack of function calls
+#  Manages param validations.
+
+# @memory - Contains the current state of the memory.
+#  Manages allocation and deallocation.
+
 module Parser
   class Helper
     def initialize

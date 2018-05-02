@@ -2,7 +2,15 @@ require 'byebug'
 require 'constants/limits'
 require_relative 'entry'
 
+# Memory - Compile time
+
 module Memory
+  # @local_counter    - number of addresses the have been used for local vars
+  # @memory           - hash for storing local variables and identifying them with the var name
+  # @temp_counter     - number of addresses the have been used for temp vars
+  # @temp_memory      - array of temporary variables
+  # @deallocated      - array of local var addresses the have been deallocated
+  # @temp_deallocated - array of temporary var addresses that have been deallocated
   class Manager
     def initialize
       @local_counter = Limits::LOCAL_START_ADDR
@@ -13,6 +21,7 @@ module Memory
       @temp_deallocated = []
     end
 
+    # Assigns an addresses that has been deallocated or a new address
     def alloc(var_entry)
       if @deallocated.any?
         addr = @deallocated.first
@@ -26,6 +35,7 @@ module Memory
       var_entry
     end
 
+    # Assigns an addresses that has been deallocated or a new address
     def alloc_temp
       if @temp_deallocated.any?
         addr = @temp_deallocated.first
@@ -40,6 +50,7 @@ module Memory
       entry
     end
 
+    # If it's a temporary variable, it releases its address
     def dealloc_temp(entry)
       if entry.is_temp
         @temp_memory.delete_at(entry.addr - Limits::TEMP_START_ADDR)
@@ -47,6 +58,7 @@ module Memory
       end
     end
 
+    # If it's a local variable, it releases its address
     def dealloc(entry)
       unless entry.is_temp
         @memory.delete entry.name

@@ -1,3 +1,5 @@
+# Types
+# Constants of the types supported in Mate
 module Types
   STRING    = 0
   INT       = 1
@@ -8,6 +10,8 @@ module Types
   UNDEFINED = 6
 end
 
+# Type Class
+# Helpful for printing nicely and identifying the value of a type
 class Type
   include Types
   attr_reader :id

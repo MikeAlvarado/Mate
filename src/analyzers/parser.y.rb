@@ -1,3 +1,12 @@
+# Parser
+# This class parses the program and initiates the line number
+
+# @parser - a helper object with functions that correspond
+#  to the grammar
+
+# Whenever a constant is found, it creates a Memory::Value
+# with its type and value.
+
 class Mate
 rule
   program:
@@ -105,11 +114,11 @@ rule
 
   values:
     /* empty */                                       {}
-    | _array_value _values                                { result = [val[0], val[1]] }
+    | _array_value _values                            { result = [val[0], val[1]] }
 
   _values:
     /* empty */                                       {}
-    | COMMA _array_value _values                          { result = [val[1], val[2]] }
+    | COMMA _array_value _values                      { result = [val[1], val[2]] }
 
   _array_value:
     constant                                          { result = val[0] }

@@ -1,4 +1,6 @@
 require 'constants/operators'
+
+# Instructions other than the typical operators.
 module Instructions
   include Operators
   READ          = 15
@@ -14,11 +16,14 @@ module Instructions
   RETURN        = 25
   SOF           = 26
 
+  # Ranges of operations, helpful for managing instructions on runtime
   BINARY_OPERATIONS = (0..12)
   UNARY_OPERATIONS = (13..17)
   JUMP_OPERATIONS = (18..21)
 end
 
+# Instruction Class
+# Helpful for printing nicely and identifying the value of the instruction
 class Instruction
   include Instructions
   attr_reader :id

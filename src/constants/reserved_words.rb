@@ -1,5 +1,8 @@
 require 'set'
 
+# ReservedWords
+# Words that the user should not use as identifiers
+
 module ReservedWords
   ORIGIN = 'origen'
   IF = 'si'
@@ -15,6 +18,7 @@ module ReservedWords
   TRUE = 'cierto'
   FALSE = 'falso'
   NIL = 'nulo'
+  ELEMENT_SIZE = 'talla'
 
   module_function
   @words = nil

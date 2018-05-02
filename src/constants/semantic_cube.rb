@@ -2,6 +2,11 @@ require 'byebug'
 require_relative 'types'
 require_relative 'operators'
 
+# SemanticCube
+# Contains the result type of any binary operation between two types
+# Since Mate is a losely-typed language, UNDEFINED is a valid type (on compile time)
+# therefore all valid operations on any type are also valid on UNDEFINED
+
 module SemanticCube
   include Operators, Types
 

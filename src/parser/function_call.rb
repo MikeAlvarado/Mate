@@ -1,4 +1,11 @@
 require 'validators/validate'
+
+# FunctionCall
+# Stores data of the function call being made.
+
+# @func - function being called
+# @current_param - number of param being assigned
+
 class FunctionCall
   attr_reader :func, :current_param
   def initialize(func)
@@ -10,6 +17,7 @@ class FunctionCall
     @current_param += 1
   end
 
+  # We need to verify that the number of params match
   def verify_params
       Validate::params_match @func, @current_param
   end

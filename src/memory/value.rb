@@ -3,6 +3,9 @@ require 'constants/reserved_words'
 require 'constants/types'
 
 module Memory
+  # Memory::Value Class
+  # Used during compile time and run time
+  # Contains the actual value and type of a constant or a variable
   class Value
     attr_accessor :value, :type
     def initialize(value, type)
