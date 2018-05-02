@@ -20,7 +20,7 @@ module VM
         @line_number)
 
       if operator.add? && result_type.string?
-        result_value = "#{@left_operand.value}#{@right_operand.value}"
+        result_value = "#{@left_operand.to_s}#{@right_operand.to_s}"
       elsif operator.and?
         result_value = @left_operand.value && @right_operand.value
       elsif operator.or?

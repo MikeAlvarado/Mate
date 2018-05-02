@@ -17,7 +17,7 @@ module SemanticCube
         BOOL      => { ADD   => STRING }.merge(common(STRING, BOOL)),
         ARRAY     => { ADD   => STRING }.merge(common(STRING, ARRAY)),
         INVALID   => { }.merge(common(STRING, INVALID)),
-        UNDEFINED => { ADD   => UNDEFINED }.merge(logic_ops(STRING, UNDEFINED))
+        UNDEFINED => { ADD   => STRING }.merge(logic_ops(STRING, UNDEFINED))
       },
       INT => {
         STRING    => { ADD => STRING }.merge(common(INT, STRING)),
@@ -64,7 +64,7 @@ module SemanticCube
         INVALID   => { }.merge(common(INVALID, INVALID))
       },
       UNDEFINED => {
-        STRING    => { ADD => UNDEFINED }.merge(common(UNDEFINED, STRING)),
+        STRING    => { ADD => STRING }.merge(common(UNDEFINED, STRING)),
         INT       => { }.merge(logic_ops(UNDEFINED, INT)).merge(arithmetic_ops(UNDEFINED)),
         FLOAT     => { }.merge(logic_ops(UNDEFINED, FLOAT)).merge(arithmetic_ops(UNDEFINED)),
         BOOL      => { }.merge(common(UNDEFINED, BOOL)),

@@ -31,7 +31,6 @@ module VM
     def _element_size(memory)
       RuntimeValidator::can_get_size @left_operand.type, memory.current_frame_name, @line_number
       Memory::Value.int @left_operand.value.length
-
     end
 
     def _write
@@ -56,14 +55,15 @@ module VM
     end
 
     def parse_input(input)
+      input = input.strip
       case input
       when ReservedWords::TRUE
         Memory::Value.bool true
       when ReservedWords::FALSE
         Memory::Value.bool false
-      when /^[0-9]+\.[0-9]+$/
+      when /^(-?)[0-9]+\.[0-9]+$/
         Memory::Value.float input.to_f
-      when /^[0-9]+$/
+      when /^(-?)[0-9]+$/
         Memory::Value.int input.to_i
       when /^\[.*\,.*\]$/
         array = input.tr('[', '').tr(']', '').split(',')

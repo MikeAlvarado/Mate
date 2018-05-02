@@ -30,15 +30,31 @@ programa FindElement {
   }
 
   funcion eliminarElemento(arreglo) {
-
+    escribe("Escribe el índice a eliminar");
+    var indice = lee();
+    arreglo[indice] = nulo;
+    regresa arreglo;
   }
 
   funcion agregarElemento(arreglo) {
-
+    escribe("Escribe el elemento que quieres agregar");
+    var elemento = lee();
+    arreglo[talla(arreglo)] = elemento;
+    regresa arreglo;
   }
 
   funcion agregarElementoAIndice(arreglo) {
-
+    escribe("Escribe el elemento que quieres agregar");
+    var elemento = lee();
+    escribe("Escribe el índice donde deseas agregar el elemento");
+    var indice = lee();
+    si (!arreglo[indice]) {
+      arreglo[indice] = elemento;
+    }
+    pero si no {
+      escribe("¡Ups! El índice está ocupado. Cancelando operación...");
+    }
+    regresa arreglo;
   }
 
   funcion imprimirArreglo(arreglo) {
@@ -46,17 +62,24 @@ programa FindElement {
   }
 
   funcion hacerArreglo {
-    escribe("Entre corchetes ([]) escribe los elementos del arreglo separados por comas");
+    escribe("Entre corchetes [ ] escribe los elementos del arreglo separados por comas. Ejemplo: [hola,cierto,3]");
     var x = lee();
     regresa x;
   }
 
   funcion editarElemento(arreglo) {
-
+    escribe("Escribe el índice del elemento que quieres editar");
+    var indice = lee();
+    escribe("Escribe el nuevo valor del elemento en el índice " + indice);
+    var elemento = lee();
+    arreglo[indice] = elemento;
+    regresa arreglo;
   }
 
   funcion imprimirElemento(arreglo) {
-
+    escribe("Escribe el índice del elemento que quieres imprimir");
+    var indice = lee();
+    escribe(indice + ". " + arreglo[indice]);
   }
 
   funcion origen {
