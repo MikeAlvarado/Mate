@@ -1,0 +1,33 @@
+programa FactorialIterativo {
+  funcion operacion_factorial (numero, contador, factorial) {
+    escribe("hello");
+    escribe("num: " + numero);
+    escribe("cont: " + contador);
+    escribe("fact: " + factorial);
+    mientras (contador < numero) {
+      factorial[contador] = factorial[contador] * factorial[contador-1];
+      contador = contador + 1;
+    }
+    escribe(factorial);
+    regresa factorial;
+  }
+
+  funcion origen {
+    var factorial = [1];
+    var contador = 1;
+    mientras (cierto) {
+      escribe("Escribe un número factorial");
+      var numero = lee();
+      si (factorial[numero] == nulo) {
+        factorial = operacion_factorial(numero, contador, factorial);
+        si(numero >= contador) {
+          contador = numero;
+        }
+        pero si no {
+          contador = contador + 1;
+        }
+      }
+      escribe("Resultado: " + factorial[numero]);
+    }
+  }
+}

@@ -1,0 +1,35 @@
+programa ParamsTest {
+  
+  funcion cinco (a, b, c, d, e) {
+    escribe("a5: " + a);
+    escribe("b5: " + b);
+    escribe("c5: " + c);
+    escribe("d5: " + d);
+    escribe("e5: " + e);
+  }
+  funcion cuatro (a, b, c, d) {
+    escribe("a4: " + a);
+    escribe("b4: " + b);
+    escribe("c4: " + c);
+    escribe("d4: " + d);
+  }
+  funcion tres (a, b, c) {
+    escribe("a3: " + a);
+    escribe("b3: " + b);
+    escribe("c3: " + c);
+  }
+  funcion dos (a, b) {
+    escribe("a2: " + a);
+    escribe("b2: " + b);
+  }
+  funcion uno (a) {
+    escribe("a1: " + a);
+  }
+  funcion origen {
+    uno (10);
+    dos ("uno", "dos");
+    tres (10, 20, 30);
+    cuatro ("uno", "dos", "tres", "cuatro");
+    cinco (10, 20, 30, 40, 50);
+  }
+}
