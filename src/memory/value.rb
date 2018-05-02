@@ -10,18 +10,6 @@ module Memory
       @type = Type.new(type)
     end
 
-    def value_to_s(value, type)
-      if value == true
-        ReservedWords::TRUE
-      elsif value == false
-        ReservedWords::FALSE
-      elsif type.undefined?
-        ReservedWords::NIL
-      else
-        "#{value}"
-      end
-    end
-
     def self.string(value)
       string_val = value.tr '"','' 
       Value.new "#{string_val}", 0
@@ -51,18 +39,26 @@ module Memory
       Value.new nil, 6
     end
 
-    def to_s
-      str = ''
-      if @type.array?
-        str += "[#{value_to_s @value.first, @type}"
-        @value.drop(1).each do |val|
-          str += ", #{value_to_s val.value, val.type}"
-        end
-        str += ']'
-      else
-        str += value_to_s(@value, @type)
+    def array_to_s(array)
+      str = "[#{array.first.to_s}"
+      array.drop(1).each do |val|
+        str += ", #{val.to_s}"
       end
-      return str
+      str += ']'
+    end
+
+    def to_s
+      if @value == true
+        ReservedWords::TRUE
+      elsif @value == false
+        ReservedWords::FALSE
+      elsif @type.undefined?
+        ReservedWords::NIL
+      elsif @type.array?
+        array_to_s @value
+      else
+        "#{@value}"
+      end
     end
   end
 end

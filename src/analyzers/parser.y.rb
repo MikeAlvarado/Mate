@@ -105,11 +105,15 @@ rule
 
   values:
     /* empty */                                       {}
-    | constant _values                                { result = [val[0], val[1]] }
+    | _array_value _values                                { result = [val[0], val[1]] }
 
   _values:
     /* empty */                                       {}
-    | COMMA constant _values                          { result = [val[1], val[2]] }
+    | COMMA _array_value _values                          { result = [val[1], val[2]] }
+
+  _array_value:
+    constant                                          { result = val[0] }
+    | array                                           { result = val[0] }
 
   array_access:
     /* empty */                                       { result = false }

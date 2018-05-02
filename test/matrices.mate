@@ -1,0 +1,68 @@
+programa Matrices {
+  funcion traer(i, j, m) {
+    var renglon = m[i];
+    regresa renglon[j];
+  }
+
+  funcion inicializa_matriz(renglones, columnas) {
+    var i = 0, j = 0;
+    var matriz = [];
+
+    mientras (i < renglones) {
+      j = 0;
+      var renglon = [];
+      mientras (j < columnas) {
+        renglon[j] = 0;
+        j = j + 1;
+      }
+      matriz[i] = renglon;
+      i = i + 1;
+    }
+    regresa matriz;
+  }
+
+  funcion inicializa_renglon(columnas) {
+    var renglon = [], j = 0;
+    mientras (j < columnas) {
+      renglon[j] = 0;
+      j = j + 1;
+    }
+    regresa renglon;
+  }
+
+// n=row x m=col * m x p = n x p
+  funcion origen {
+    var primera_matriz = [[1,2,3],[2,3,4]];
+    var segunda_matriz = [[5,6,5,6],[9,8,10,12],[10,11,23,32]];
+
+    var n = talla(primera_matriz);
+    var m = talla(primera_matriz[0]);
+    var p = talla(segunda_matriz[0]);
+
+    /*
+    * col1 = row2
+    * col2
+    * row1
+    */
+
+    var i = 0, j = 0, k = 0, resultado = inicializa_matriz(n,p);
+    mientras(i < n) {
+      j = 0;
+      var renglon_resultado = inicializa_renglon(p);
+      mientras(j < p) {
+        k = 0;
+        mientras(k < m) {
+          renglon_resultado[j] = renglon_resultado[j]
+            + traer(i, k, primera_matriz)
+            * traer(k, j, segunda_matriz);
+          k = k + 1;
+        }
+        resultado[i] = [] + renglon_resultado;
+        j = j + 1;
+      }
+      i = i + 1;
+    }
+    escribe("El resultado de la sumatoria de matrices es: ");
+    escribe(resultado);
+  }
+}
