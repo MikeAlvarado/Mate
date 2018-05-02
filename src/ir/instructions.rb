@@ -3,19 +3,20 @@ module Instructions
   include Operators
   READ          = 15
   WRITE         = 16
-  GOSUB         = 17
-  GOTO          = 18
-  GOTOF         = 19
-  EOF           = 20 # End of function
-  EOP           = 21 # End of program
-  ERA           = 22 # Activation record expansion
-  PARAM         = 23
-  RETURN        = 24
-  SOF           = 25
+  ELEMENT_SIZE  = 17
+  GOSUB         = 18
+  GOTO          = 19
+  GOTOF         = 20
+  EOF           = 21 # End of function
+  EOP           = 22 # End of program
+  ERA           = 23 # Activation record expansion
+  PARAM         = 24
+  RETURN        = 25
+  SOF           = 26
 
   BINARY_OPERATIONS = (0..12)
-  UNARY_OPERATIONS = (13..16)
-  JUMP_OPERATIONS = (17..20)
+  UNARY_OPERATIONS = (13..17)
+  JUMP_OPERATIONS = (18..21)
 end
 
 class Instruction
@@ -43,6 +44,10 @@ class Instruction
 
   def sof?
     @id == SOF
+  end
+
+  def element_size?
+    @id == ELEMENT_SIZE
   end
 
   def write?

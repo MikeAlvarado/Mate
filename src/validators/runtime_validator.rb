@@ -20,6 +20,10 @@ module RuntimeValidator
     raise MateRuntimeError.invalid_operand_type(operand, Type.new(type), function, line_number) if operand.type.id != type
   end
 
+  def can_get_size(operand, function, line_number)
+    raise MateRuntimeError.cannot_get_size(operand, function, line_number) if !(operand.array? || operand.string?)
+  end
+
   def operation_is_valid(left, right, operator, result, function, line_number)
     raise MateRuntimeError.invalid_operation(left, right, operator, function, line_number) if result.invalid? || result.undefined?
   end

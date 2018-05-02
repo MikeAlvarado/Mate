@@ -1,6 +1,7 @@
 require 'byebug'
 require 'constants/limits'
 require 'ir/var_access'
+require 'memory/value'
 require 'validators/runtime_validator'
 require_relative 'utility'
 
@@ -23,11 +24,11 @@ module VM
         @temp[var_metadata.addr - Limits::TEMP_START_ADDR]
         : @local[var_metadata.addr - Limits::LOCAL_START_ADDR]
       if var_metadata.index.nil?
-        value
+        value || Memory::Value.undefined
       else
         array = value
         index = Utility::get_value var_metadata.index, memory, line_number
-        array.value[index.value]
+        array.value[index.value] || Memory::Value.undefined
       end
     end
 

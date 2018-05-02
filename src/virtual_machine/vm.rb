@@ -43,6 +43,8 @@ module VM
           result_operand,
           line_number)
         operation.execute operator, @memory
+        @memory.remove_temp instruction.left_operand, line_number
+        @memory.remove_temp instruction.right_operand, line_number
 
       elsif operator.jump_operation?
         operation = JumpOperation.new(
@@ -50,7 +52,9 @@ module VM
           right_value,
           result_operand,
           line_number)
-        return operation.execute operator, @current_instruction, @memory
+        next_instruction = operation.execute operator, @current_instruction, @memory
+        @memory.remove_temp instruction.left_operand, line_number
+        return next_instruction
 
       elsif operator.unary_operation?
         operation = UnaryOperation.new(
@@ -59,18 +63,22 @@ module VM
           result_operand,
           line_number)
         operation.execute operator, @memory
+        @memory.remove_temp instruction.left_operand, line_number
 
       elsif operator.era?
         @memory.new_frame @functions[left_value]
 
       elsif operator.param?
         @memory.set_param left_value, right_value
+        @memory.remove_temp instruction.right_operand, line_number
 
       elsif operator.sof?
         @memory.start_frame
 
       elsif operator.return?
-        return @memory.set_return left_value, line_number
+        next_instruction = @memory.set_return left_value, line_number
+        @memory.remove_temp instruction.left_operand, line_number
+        return next_instruction
       end
 
       @current_instruction + 1

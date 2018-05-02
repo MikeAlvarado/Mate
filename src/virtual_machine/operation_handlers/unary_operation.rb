@@ -26,6 +26,11 @@ module VM
       end
     end
 
+    def _element_size
+      RuntimeValidator::can_get_size @left_operand, memory.current_frame_name, @line_number
+      Memory::Value.int @left_operand.value.length
+    end
+
     def _write
       puts @left_operand
     end

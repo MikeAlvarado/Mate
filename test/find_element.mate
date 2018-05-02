@@ -1,0 +1,104 @@
+programa FindElement {
+  funcion menu {
+    escribe("*** MENU ***");
+    escribe("1. Encontrar índice de elemento");
+    escribe("2. Eliminar elemento");
+    escribe("3. Agregar elemento al final del arreglo");
+    escribe("4. Agregar elemento a un índice");
+    escribe("5. Imprimir arreglo");
+    escribe("6. Rehacer arreglo");
+    escribe("7. Editar elemento de arreglo");
+    escribe("8. Imprimir elemento del arreglo");
+    escribe("9. Salir");
+  }
+
+  funcion encontrarIndice(arreglo) {
+    escribe("Escribe el valor del elemento a buscar");
+    var elemento = lee();
+    var i = 0;
+    var encontrado = falso;
+    mientras(i < 4 && !encontrado) {
+      si (arreglo[i] == elemento) {
+        escribe("El índice del elemento " + elemento + " es " + i);
+        encontrado = cierto;
+      }
+      i = i + 1;
+    }
+    si(!encontrado) {
+      escribe("No se encontró el índice del elemento");
+    }
+  }
+
+  funcion eliminarElemento(arreglo) {
+
+  }
+
+  funcion agregarElemento(arreglo) {
+
+  }
+
+  funcion agregarElementoAIndice(arreglo) {
+
+  }
+
+  funcion imprimirArreglo(arreglo) {
+    escribe(arreglo);
+  }
+
+  funcion hacerArreglo {
+    escribe("Entre corchetes ([]) escribe los elementos del arreglo separados por comas");
+    var x = lee();
+    regresa x;
+  }
+
+  funcion editarElemento(arreglo) {
+
+  }
+
+  funcion imprimirElemento(arreglo) {
+
+  }
+
+  funcion origen {
+    var arreglo = hacerArreglo();
+    var opcion = -1;
+    mientras(opcion != 9) {
+      menu();
+      opcion = lee();
+
+      si (opcion != 1 && opcion != 2 && opcion != 3 &&
+      opcion != 4 && opcion != 5 && opcion != 6 &&
+      opcion != 7 && opcion != 8 && opcion != 9) {
+        escribe("Opción inválida");
+      }
+
+      pero si no {
+        si (opcion == 1) {
+          encontrarIndice(arreglo);
+        }
+        si (opcion == 2) {
+          arreglo = eliminarElemento(arreglo);
+        }
+        si (opcion == 3) {
+          arreglo = agregarElemento(arreglo);
+        }
+        si (opcion == 4) {
+          arreglo = agregarElementoAIndice(arreglo);
+        }
+        si (opcion == 5) {
+          imprimirArreglo(arreglo);
+        }
+        si (opcion == 6) {
+          arreglo = hacerArreglo();
+        }
+        si (opcion == 7) {
+          arreglo = editarElemento(arreglo);
+        }
+        si (opcion == 8) {
+          imprimirElemento(arreglo);
+        }
+      }
+    }
+    escribe("Fin");
+  }
+}

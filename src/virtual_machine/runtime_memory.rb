@@ -1,5 +1,6 @@
 require 'byebug'
 require 'constants/limits'
+require 'ir/var_access'
 require 'validators/runtime_validator'
 require_relative 'frame'
 
@@ -15,9 +16,7 @@ module VM
     end
 
     def get_value(var_metadata, line_number)
-      var_value = @current_frame.get_value var_metadata, self, line_number
-      RuntimeValidator::var_exists var_metadata, @current_frame.name, line_number
-      var_value
+      @current_frame.get_value var_metadata, self, line_number
     end
 
     def end_frame
@@ -43,6 +42,12 @@ module VM
           @var_count, @current_frame.name, line_number)
       end
       @current_frame.set_value var_metadata, var_value, self, line_number
+    end
+
+    def remove_temp(var_metadata, line_number)
+      if !var_metadata.nil? && var_metadata.is_a?(VarAccess) && var_metadata.is_temp
+        set_value(var_metadata, nil, line_number)
+      end
     end
 
     def set_return_metadata(return_metadata, instruction_number)

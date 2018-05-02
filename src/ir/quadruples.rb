@@ -117,13 +117,11 @@ module IR
     end
 
     def func_call(memory, func, current_func)
-      unless func.type.invalid?
-        call_result = memory.alloc_temp
-        call_result_access = {
-          addr: call_result.addr,
-          is_temp: call_result.is_temp
-        }
-      end
+      call_result = memory.alloc_temp
+      call_result_access = {
+        addr: call_result.addr,
+        is_temp: call_result.is_temp
+      }
       save_operation(
         Instructions::GOSUB,
         func.name,
@@ -216,6 +214,16 @@ module IR
         result_access)
       memory.dealloc_temp right if right.is_a? VarAccess
       memory.dealloc_temp left if left.is_a? VarAccess
+    end
+
+    def element_size(memory)
+      operand = get_operand memory
+      save_operation(
+        Instructions::ELEMENT_SIZE,
+        operand,
+        nil,
+        nil,
+        memory)
     end
 
     def write(memory)

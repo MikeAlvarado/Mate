@@ -24,6 +24,7 @@ rule
                           elsif text == "nulo" then return      [:NIL,      text]
                           elsif text == "escribe" then return   [:WRITE,    text]
                           elsif text == "lee" then return       [:READ,     text]
+                          elsif text == "talla" then return     [:SIZE,     text]
                           else return [:ID, text] end }
 
   [0-9]+\.[0-9]+         { [:CST_DEC,           text.to_f] }

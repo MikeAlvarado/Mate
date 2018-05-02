@@ -6,6 +6,10 @@ class MateRuntimeError < RuntimeError
     @line_number = line_number
   end
 
+  def self.cannot_get_size(operand, function, line_number)
+    MateRuntimeError.new 'No se puede obtener la talla del operando #{operand}', function, line_number
+  end
+
   def self.index_out_of_bounds(function, line_number)
     MateRuntimeError.new 'Índice fuera de los límites', function, line_number
   end

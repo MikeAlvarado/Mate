@@ -173,6 +173,10 @@ module Parser
       @ir.new_operator Operator.new operator
     end
 
+    def element_size
+      @ir.element_size @memory
+    end
+
     def read
       @ir.read @memory, @program.current_function
     end

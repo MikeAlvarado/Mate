@@ -122,6 +122,7 @@ rule
   built_in_function_call:
     WRITE L_PAREN expression R_PAREN                  { @parser.write }
     | READ L_PAREN R_PAREN                            { @parser.read }
+    | SIZE L_PAREN expression R_PAREN                 { @parser.element_size }
 
   custom_function_call:
     call_name
