@@ -1,0 +1,33 @@
+programa Factorial {
+  funcion factorial_iterativo (numero) {
+    si (numero <= 1) {
+      regresa 1;
+    }
+    var i = 1, resultado = 1;
+    mientras (i <= numero) {
+      resultado = resultado * i;
+      i = i + 1;
+    }
+    regresa resultado;
+  }
+
+  funcion factorial_recursivo (numero) {
+    si (numero <= 1) {
+      regresa 1;
+    }
+    regresa numero * factorial_recursivo(numero - 1);
+  }
+
+  funcion origen {
+    mientras (cierto) {
+      var numero = 0;
+      escribe("Escribe un número para factorial iterativo");
+      numero = lee() || numero;
+      escribe("Factorial iterativo de " + numero + " es: " + factorial_iterativo(numero));
+
+      escribe("Escribe un número para factorial recursivo");
+      numero = lee() || numero;
+      escribe("Factorial recursivo de " + numero + " es: " + factorial_recursivo(numero));
+    }
+  }
+}

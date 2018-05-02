@@ -27,6 +27,8 @@ module VM
     def execute_safely(process)
       begin
         process.call()
+      rescue Interrupt => err
+        puts "¡Adiós!"
       rescue MateRuntimeError => err
         unless err.line_number.nil?
           line_number = " en la línea #{err.line_number}"
