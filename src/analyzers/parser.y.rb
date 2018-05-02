@@ -36,13 +36,14 @@ rule
 
   _params:
     /* empty */                                       {}
-    | ID more_params
-    { @parser.def_param val[0] }
+    | _param_id more_params                           {}
 
   more_params:
   /* empty */                                         {}
-  | COMMA ID more_params
-  { @parser.def_param val[1] }
+  | COMMA _param_id more_params                       {}
+
+  _param_id:
+    ID                                                { @parser.def_param val[0] }
 
   block:
     L_BRACKET                                         { @parser.def_scope }

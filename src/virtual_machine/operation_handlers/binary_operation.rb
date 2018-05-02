@@ -28,9 +28,6 @@ module VM
       else
         result_value = @left_operand.value.send operator.to_s, @right_operand.value
       end
-      if $debug
-        puts operation_to_s operator, Memory::Value.new(result_value, result_type_id)
-      end
       memory.set_value @result_metadata, Memory::Value.new(result_value, result_type_id), @line_number
     end
 
