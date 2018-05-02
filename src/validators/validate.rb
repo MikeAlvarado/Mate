@@ -1,7 +1,6 @@
 require 'constants/limits'
 require 'constants/reserved_words'
 require 'constants/types'
-require 'symbols/base'
 require_relative 'mate_error'
 
 module Validate
