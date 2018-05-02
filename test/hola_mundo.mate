@@ -1,0 +1,6 @@
+programa HolaMundo {
+  funcion origen {
+    escribe("Hola mundo!");
+  }
+}
+

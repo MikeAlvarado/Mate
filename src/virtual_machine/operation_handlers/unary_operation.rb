@@ -42,8 +42,9 @@ module VM
       puts @left_operand
     end
 
+    # To avoid 'mutability' we clone the value
     def _assign
-      Memory::Value.new @left_operand.value, @left_operand.type.id
+      Memory::Value.new @left_operand.value.clone, @left_operand.type.id
     end
 
     # We don't validate the left_operand is a bool because we take a

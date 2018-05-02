@@ -1,0 +1,26 @@
+programa Sort {
+    funcion bubble_sort (arreglo) {
+        var swapped = cierto, i = 0;
+        mientras (swapped == cierto) {
+            swapped = falso;
+            i = 1;
+            mientras (i < talla(arreglo)) {
+                si (arreglo[i-1] > arreglo[i]) {
+                    var aux = arreglo[i-1];
+                    arreglo[i-1] = arreglo[i];
+                    arreglo[i] = aux;
+                    swapped = cierto;
+                }
+                i = i + 1;
+            }
+        }
+        regresa arreglo;
+    }
+
+    funcion origen {
+        escribe("Introduzca un arreglo: ");
+        var arreglo = lee();
+        escribe("Valores ordenados");
+        escribe(bubble_sort(arreglo));
+    }
+}

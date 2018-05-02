@@ -48,7 +48,7 @@ programa Matrices {
     var i = 0, j = 0, k = 0, resultado = inicializa_matriz(n,p);
     mientras(i < n) {
       j = 0;
-      var renglon_resultado = inicializa_renglon(p);
+      var renglon_resultado = resultado[i];
       mientras(j < p) {
         k = 0;
         mientras(k < m) {
@@ -57,7 +57,7 @@ programa Matrices {
             * traer(k, j, segunda_matriz);
           k = k + 1;
         }
-        resultado[i] = [] + renglon_resultado;
+        resultado[i] = renglon_resultado;
         j = j + 1;
       }
       i = i + 1;
